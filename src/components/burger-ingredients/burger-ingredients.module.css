@@ -1,0 +1,51 @@
+.containerScroll {
+    max-height: 612px;
+    overflow-y: auto;
+    scrollbar-color: #8585AD #2F2F37;
+}
+
+.sectionHeader {
+    margin: 40px 0 20px;
+    text-align: left;
+}
+
+.tabBar {
+    margin-bottom: 40px;
+}
+
+.itemsContainerHeader {
+    text-align: left;
+}
+
+.itemsContainer {
+    padding: 24px 16px 40px;
+    width: 568px;
+    display: flex;
+    column-gap: 24px;
+    row-gap: 32px;
+    flex-wrap: wrap;
+}
+
+
+.item {
+    position: relative;
+    box-sizing: border-box;
+    max-width: 272px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 24px;
+}
+
+.itemPrice {
+    padding: 4px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.counter {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
