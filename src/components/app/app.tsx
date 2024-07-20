@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import logo from './logo.svg';
-import './App.css';
-import AppHeader from './components/app-header/app-header';
-import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
-import ingredients from './data/ingredients.json';
-import BurgerConstructor from './components/burger-constructor/burger-constructor';
+import styles from './app.module.css';
+import AppHeader from '../app-header/app-header';
+import BurgerIngredients from '../burger-ingredients/burger-ingredients';
+import ingredients from '../../data/ingredients.json';
+import BurgerConstructor from '../burger-constructor/burger-constructor';
 
 interface Ingredient {
   _id: string;
@@ -31,9 +31,9 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className={styles.app}>
       <AppHeader />
-      <main style={{ display: 'flex', justifyContent: 'center', columnGap: '40px' }}>
+      <main className={styles.mainContainer}>
         <BurgerIngredients ingredients={ingredients} onAddIngredient={handleAddIngredient} />
         <BurgerConstructor selectedIngredients={selectedIngredients} />
       </main>

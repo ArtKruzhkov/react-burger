@@ -30,10 +30,9 @@ const BurgerConstructor = ({ selectedIngredients }) => {
                         />
                     )}
                     {otherIngredients.map((ingredient, index) => (
-                        <div className={styles.ingredientsContainer}>
+                        <div className={styles.ingredientsContainer} key={index}>
                             <div className={styles.dragIcon}><DragIcon type="primary" /></div>
                             <ConstructorElement
-                                key={index}
                                 text={ingredient.name}
                                 price={ingredient.price}
                                 thumbnail={ingredient.image}
@@ -52,7 +51,7 @@ const BurgerConstructor = ({ selectedIngredients }) => {
                 </div>
             </div>
             <div className={styles.totalPriceContainer}>
-                <p className="text text_type_digits-medium">{totalPrice}<CurrencyIcon type="primary" /></p>
+                <p className={`${styles.totalPrice} text text_type_digits-medium`}>{totalPrice}<CurrencyIcon type="primary" /></p>
                 <Button htmlType="button" type="primary" size="large">
                     Оформить заказ
                 </Button>

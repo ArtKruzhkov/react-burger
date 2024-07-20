@@ -1,3 +1,7 @@
+a {
+    text-decoration: none;
+}
+
 .mainHeader {
     display: flex;
     align-items: center;

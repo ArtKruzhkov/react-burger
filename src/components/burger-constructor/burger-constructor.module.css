@@ -37,3 +37,9 @@
     column-gap: 48px;
     margin-top: 48px;
 }
+
+.totalPrice {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
