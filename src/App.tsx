@@ -20,11 +20,9 @@ function App() {
   const handleAddIngredient = (ingredient: Ingredient) => {
     setSelectedIngredients(prevIngredients => {
       if (ingredient.type === 'bun') {
-        // Если это булка, заменим текущую булку
         const otherIngredients = prevIngredients.filter(ing => ing.type !== 'bun');
         return [ingredient, ...otherIngredients];
       } else {
-        // Добавляем остальные ингредиенты между верхней и нижней булкой
         const bun = prevIngredients.find(ing => ing.type === 'bun');
         const otherIngredients = prevIngredients.filter(ing => ing.type !== 'bun');
         return bun ? [bun, ...otherIngredients, ingredient] : [...prevIngredients, ingredient];

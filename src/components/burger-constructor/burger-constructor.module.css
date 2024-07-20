@@ -1,6 +1,4 @@
 .sectionConstructor {
-    /* display: flex;
-    flex-direction: column; */
     margin-top: 100px;
     padding: 0 16px 52px;
     width: 568px;
@@ -8,7 +6,6 @@
 }
 
 .containerScrollConstructor {
-    /* flex: 1; */
     height: 560px;
     max-height: 560px;
     overflow-y: auto;
