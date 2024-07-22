@@ -1,0 +1,45 @@
+.sectionConstructor {
+    margin-top: 100px;
+    padding: 0 16px 52px;
+    width: 568px;
+    box-sizing: border-box;
+}
+
+.containerScrollConstructor {
+    height: 560px;
+    max-height: 560px;
+    overflow-y: auto;
+    scrollbar-color: #8585AD #2F2F37;
+    padding-left: 32px;
+}
+
+.itemsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ingredientsContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.dragIcon {
+    position: absolute;
+    left: -28px;
+}
+
+.totalPriceContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 48px;
+    margin-top: 48px;
+}
+
+.totalPrice {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

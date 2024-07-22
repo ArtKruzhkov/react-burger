@@ -1,0 +1,21 @@
+a {
+    text-decoration: none;
+}
+
+.mainHeader {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    justify-content: space-around;
+}
+
+.navbarHeader {
+    display: flex;
+    gap: 8px;
+}
+
+.linkContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

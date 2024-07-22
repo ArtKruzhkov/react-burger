@@ -1,0 +1,9 @@
+.app {
+  text-align: center;
+}
+
+.mainContainer {
+  display: flex;
+  justify-content: center;
+  column-gap: 40px;
+}
