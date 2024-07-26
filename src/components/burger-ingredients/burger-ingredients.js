@@ -1,9 +1,9 @@
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useState } from "react";
-import PropTypes from "prop-types";
 import styles from './burger-ingredients.module.css';
 
-const IngredientsList = ({ title, ingredientsList, onIngredientClick, clickedIngredients }) => {
+const IngredientsList = ({ title, ingredientsList, onIngredientClick, clickedIngredients, selectedBun }) => {
     const handleIngredientClick = (ingredient) => {
         onIngredientClick(ingredient);
     };
@@ -13,7 +13,11 @@ const IngredientsList = ({ title, ingredientsList, onIngredientClick, clickedIng
             <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>{title}</h3>
             <div className={styles.itemsContainer}>
                 {ingredientsList.map(ingredient => (
-                    <div className={styles.item} key={ingredient._id} onClick={() => handleIngredientClick(ingredient)}>
+                    <div
+                        className={`${styles.item} ${selectedBun === ingredient._id ? styles.selected : ''}`}
+                        key={ingredient._id}
+                        onClick={() => handleIngredientClick(ingredient)}
+                    >
                         <img src={ingredient.image} alt={ingredient.name}></img>
                         <p className={`${styles.itemPrice} text text_type_digits-default`}>{ingredient.price}<CurrencyIcon /></p>
                         <p className="text text_type_main-default">{ingredient.name}</p>
@@ -32,21 +36,42 @@ IngredientsList.propTypes = {
     ingredientsList: PropTypes.arrayOf(PropTypes.object).isRequired,
     onIngredientClick: PropTypes.func.isRequired,
     clickedIngredients: PropTypes.object.isRequired,
+    selectedBun: PropTypes.string,
 };
 
 function BurgerIngredients({ ingredients, onAddIngredient }) {
     const [current, setCurrent] = useState('bun');
     const [clickedIngredients, setClickedIngredients] = useState({});
+    const [selectedBun, setSelectedBun] = useState(null);
 
     const buns = ingredients.filter(ingredient => ingredient.type === 'bun');
     const mains = ingredients.filter(ingredient => ingredient.type === 'main');
     const sauces = ingredients.filter(ingredient => ingredient.type === 'sauce');
 
     const handleIngredientClick = (ingredient) => {
-        setClickedIngredients(prevState => ({
-            ...prevState,
-            [ingredient._id]: (prevState[ingredient._id] || 0) + 1
-        }));
+        if (ingredient.type === 'bun') {
+
+            if (selectedBun && selectedBun !== ingredient._id) {
+                setClickedIngredients(prevState => ({
+                    ...prevState,
+                    [selectedBun]: null
+                }));
+            }
+
+            setSelectedBun(ingredient._id);
+
+            setClickedIngredients(prevState => ({
+                ...prevState,
+                [ingredient._id]: 1
+            }));
+
+        } else {
+            setClickedIngredients(prevState => ({
+                ...prevState,
+                [ingredient._id]: (prevState[ingredient._id] || 0) + 1
+            }));
+        }
+
         onAddIngredient(ingredient);
     };
 
@@ -74,6 +99,7 @@ function BurgerIngredients({ ingredients, onAddIngredient }) {
                             ingredientsList={buns}
                             onIngredientClick={handleIngredientClick}
                             clickedIngredients={clickedIngredients}
+                            selectedBun={selectedBun}
                         />
                         <IngredientsList
                             title="Соусы"
