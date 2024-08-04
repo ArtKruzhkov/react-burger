@@ -18,20 +18,23 @@ function App() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetch(API_URL)
       .then(response => {
         if (!response.ok) {
           throw new Error('Ошибка запроса к серверу');
-        };
+        }
         return response.json();
       })
       .then(data => {
-        setIngredients(data.data)
+        setIngredients(data.data);
+        setLoading(false);
       })
       .catch(error => {
         setError(error.message);
+        setLoading(false);
       });
   }, []);
 
@@ -58,8 +61,18 @@ function App() {
     <div className={styles.app}>
       <AppHeader />
       <main className={styles.mainContainer}>
-        <BurgerIngredients ingredients={ingredients} onAddIngredient={handleAddIngredient} />
-        <BurgerConstructor selectedIngredients={selectedIngredients} />
+        {loading ? (
+          <div><p className="text text_type_main-default">Loading...</p></div>
+        ) : error ? (
+          <div><p className="text text_type_main-default">{error}</p></div>
+        ) : ingredients && ingredients.length ? (
+          <>
+            <BurgerIngredients ingredients={ingredients} onAddIngredient={handleAddIngredient} />
+            <BurgerConstructor selectedIngredients={selectedIngredients} />
+          </>
+        ) : (
+          <div><p className="text text_type_main-default">No ingredients available</p></div>
+        )}
       </main>
     </div>
   );
