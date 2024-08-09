@@ -11,6 +11,7 @@
 
 .tabBar {
     margin-bottom: 40px;
+    display: flex;
 }
 
 .itemsContainerHeader {
