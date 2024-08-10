@@ -31,12 +31,12 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
     );
 };
 
+
 DraggableIngredient.propTypes = {
     ingredient: PropTypes.object.isRequired,
     onIngredientClick: PropTypes.func.isRequired,
     count: PropTypes.number.isRequired
 };
-
 
 const IngredientsList = ({ title, ingredientsList, clickedIngredients, innerRef, onIngredientClick }) => {
     return (
@@ -60,7 +60,6 @@ IngredientsList.propTypes = {
     title: PropTypes.string.isRequired,
     ingredientsList: PropTypes.arrayOf(PropTypes.object).isRequired,
     clickedIngredients: PropTypes.object.isRequired,
-    selectedBun: PropTypes.string,
     innerRef: PropTypes.object,
     onIngredientClick: PropTypes.func.isRequired,
 };
