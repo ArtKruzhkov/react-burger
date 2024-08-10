@@ -1,4 +1,4 @@
-import { ADD_INGREDIENT_TO_CONSTRUCTOR, REMOVE_INGREDIENT_FROM_CONSTRUCTOR, UPDATE_INGREDIENT_ORDER } from "../actions/constructor-actions";
+import { ADD_INGREDIENT_TO_CONSTRUCTOR, REMOVE_INGREDIENT_FROM_CONSTRUCTOR, UPDATE_INGREDIENT_ORDER, CLEAR_CONSTRUCTOR } from "../actions/constructor-actions";
 
 const initialState = {
     ingredients: [],
@@ -92,6 +92,9 @@ const constructorReducer = (state = initialState, action) => {
                 ...state,
                 ingredients: action.payload
             };
+        }
+        case CLEAR_CONSTRUCTOR: {
+            return initialState;
         }
         default:
             return state;

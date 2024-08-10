@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../data/constants";
 import { checkResponse } from "../../data/api";
+import { clearConstructor } from "./constructor-actions";
 
 export const SET_ORDER = 'SET_ORDER';
 export const CLEAR_ORDER = 'CLEAR_ORDER';
@@ -28,6 +29,7 @@ export const createOrder = (ingredients) => async (dispatch) => {
         const data = await checkResponse(response);
         if (data.success) {
             dispatch(setOrder(data.order.number, data.name));
+            dispatch(clearConstructor());
         } else {
             throw new Error('Ошибка при создании заказа');
         }
