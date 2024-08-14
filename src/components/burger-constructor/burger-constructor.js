@@ -1,16 +1,68 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDrop, useDrag } from 'react-dnd';
+import { ItemTypes } from '../../data/itemTypes';
+import { useDispatch, useSelector } from 'react-redux';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
 import Modal from '../modals/modal/modal';
 import OrderDetails from '../order-details/order-details';
-import IngredientDetails from '../ingredient-details/ingredient-details';
+import { createOrder } from '../../services/actions/order-actions';
+import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/actions/constructor-actions';
+import { useState } from 'react';
 
-function BurgerConstructor({ selectedIngredients }) {
+const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, otherIngredients }) => {
+    const [, drag] = useDrag({
+        type: ItemTypes.INGREDIENT,
+        item: { id: ingredient.uniqueId, index },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging()
+        })
+    });
 
+    const [, drop] = useDrop({
+        accept: ItemTypes.INGREDIENT,
+        hover: (item) => {
+            const isInConstructor = item.index !== undefined && item.index >= 0 && item.index < otherIngredients.length;
+
+            if (isInConstructor && item.index !== index) {
+                moveIngredient(item.index, index);
+                item.index = index;
+            }
+        }
+    });
+
+    return (
+        <div ref={(node) => drag(drop(node))} className={styles.ingredientsContainer}>
+            <div className={styles.dragIcon}><DragIcon type="primary" /></div>
+            <ConstructorElement
+                text={ingredient.name}
+                price={ingredient.price}
+                thumbnail={ingredient.image}
+                handleClose={() => handleRemove(ingredient.uniqueId)}
+            />
+        </div>
+    );
+};
+
+const DroppableArea = ({ onDrop, children }) => {
+    const [{ isOver }, drop] = useDrop({
+        accept: ItemTypes.INGREDIENT,
+        drop: (item) => onDrop(item),
+        collect: (monitor) => ({
+            isOver: monitor.isOver()
+        })
+    });
+
+    return (
+        <div ref={drop} className={`${styles.droppableArea} ${isOver ? styles.active : ''}`}>
+            {children}
+        </div>
+    );
+};
+
+const BurgerConstructor = () => {
+    const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalContent, setModalContent] = useState(null);
-
+    const selectedIngredients = useSelector(state => state.constructorReducer.ingredients);
     const bun = selectedIngredients.find(ingredient => ingredient.type === 'bun');
     const otherIngredients = selectedIngredients.filter(ingredient => ingredient.type !== 'bun');
 
@@ -23,23 +75,45 @@ function BurgerConstructor({ selectedIngredients }) {
     const totalPrice = calculateTotalPrice();
 
     const openOrderModal = () => {
-        setModalContent(<OrderDetails />);
+        const ingredientIds = selectedIngredients.map(ingredient => ingredient._id);
+
+        if (ingredientIds.length === 0) {
+            alert('Добавьте ингредиенты в конструктор!');
+            return;
+        }
+
+        dispatch(createOrder(ingredientIds));
         setIsModalOpen(true);
     };
 
-    const openIngredientModal = (ingredient) => {
-        setModalContent(
-            <IngredientDetails {...ingredient} />
-        );
-        setIsModalOpen(true);
-    }
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleDrop = (ingredient) => {
+        dispatch(addIngredientToConstructor(ingredient));
+    };
+
+    const handleRemove = (uniqueId) => {
+        dispatch(removeIngredientFromConstructor(uniqueId));
+    };
+
+    const moveIngredient = (fromIndex, toIndex) => {
+        const updatedIngredients = [...otherIngredients];
+        const [movedIngredient] = updatedIngredients.splice(fromIndex, 1);
+        updatedIngredients.splice(toIndex, 0, movedIngredient);
+        dispatch(updateIngredientOrder([
+            ...selectedIngredients.filter(ingredient => ingredient.type === 'bun'),
+            ...updatedIngredients
+        ]));
+    };
 
     return (
         <section className={styles.sectionConstructor}>
-            <div className={`${styles.containerScrollConstructor} custom-scroll`}>
-                <div className={styles.itemsContainer}>
+            <DroppableArea onDrop={handleDrop}>
+                <div className={`${styles.containerScrollConstructor} custom-scroll`}>
                     {bun && (
-                        <div onClick={() => openIngredientModal(bun)}>
+                        <div className={styles.ingredientsContainer}>
                             <ConstructorElement
                                 type="top"
                                 isLocked={true}
@@ -49,18 +123,20 @@ function BurgerConstructor({ selectedIngredients }) {
                             />
                         </div>
                     )}
+
                     {otherIngredients.map((ingredient, index) => (
-                        <div className={styles.ingredientsContainer} key={index} onClick={() => openIngredientModal(ingredient)}>
-                            <div className={styles.dragIcon}><DragIcon type="primary" /></div>
-                            <ConstructorElement
-                                text={ingredient.name}
-                                price={ingredient.price}
-                                thumbnail={ingredient.image}
-                            />
-                        </div>
+                        <DraggableIngredient
+                            key={ingredient.uniqueId}
+                            ingredient={ingredient}
+                            index={index}
+                            moveIngredient={moveIngredient}
+                            handleRemove={handleRemove}
+                            otherIngredients={otherIngredients}
+                        />
                     ))}
+
                     {bun && (
-                        <div onClick={() => openIngredientModal(bun)}>
+                        <div className={styles.ingredientsContainer}>
                             <ConstructorElement
                                 type="bottom"
                                 isLocked={true}
@@ -71,24 +147,27 @@ function BurgerConstructor({ selectedIngredients }) {
                         </div>
                     )}
                 </div>
-            </div>
+            </DroppableArea>
             <div className={styles.totalPriceContainer}>
-                <p className={`${styles.totalPrice} text text_type_digits-medium`}>{totalPrice}<CurrencyIcon type="primary" /></p>
-                <Button htmlType="button" type="primary" size="large" onClick={openOrderModal}>
+                <p className={`${styles.totalPrice} text text_type_digits-medium`}>
+                    {totalPrice}<CurrencyIcon type="primary" />
+                </p>
+                <Button
+                    htmlType="button"
+                    type="primary"
+                    size="large"
+                    onClick={openOrderModal}
+                >
                     Оформить заказ
                 </Button>
             </div>
             {isModalOpen && (
-                <Modal onClose={() => setIsModalOpen(false)}>
-                    {modalContent}
+                <Modal onClose={closeModal}>
+                    <OrderDetails />
                 </Modal>
             )}
         </section>
     );
-};
-
-BurgerConstructor.propTypes = {
-    selectedIngredients: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default BurgerConstructor;

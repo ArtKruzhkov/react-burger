@@ -1,30 +1,55 @@
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useDrag } from 'react-dnd';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
+import { fetchIngredients } from '../../services/actions/ingredients-actions';
+import { ItemTypes } from '../../data/itemTypes';
+import Modal from '../modals/modal/modal';
+import IngredientDetails from '../ingredient-details/ingredient-details';
 import styles from './burger-ingredients.module.css';
 
-const IngredientsList = ({ title, ingredientsList, onIngredientClick, clickedIngredients, selectedBun }) => {
-    const handleIngredientClick = (ingredient) => {
-        onIngredientClick(ingredient);
-    };
+const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
+    const [, drag] = useDrag({
+        type: ItemTypes.INGREDIENT,
+        item: ingredient,
+    });
 
     return (
-        <div>
+        <div
+            ref={drag}
+            className={`${styles.item} ${styles.draggableItem}`}
+            onClick={() => onIngredientClick(ingredient)}
+        >
+            <img src={ingredient.image} alt={ingredient.name} />
+            <p className={`${styles.itemPrice} text text_type_digits-default`}>
+                {ingredient.price}<CurrencyIcon />
+            </p>
+            <p className="text text_type_main-default">{ingredient.name}</p>
+            {count > 0 && <Counter count={count} size="default" />}
+        </div>
+    );
+};
+
+
+DraggableIngredient.propTypes = {
+    ingredient: PropTypes.object.isRequired,
+    onIngredientClick: PropTypes.func.isRequired,
+    count: PropTypes.number.isRequired
+};
+
+const IngredientsList = ({ title, ingredientsList, clickedIngredients, innerRef, onIngredientClick }) => {
+    return (
+        <div ref={innerRef}>
             <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>{title}</h3>
             <div className={styles.itemsContainer}>
                 {ingredientsList.map(ingredient => (
-                    <div
-                        className={`${styles.item} ${selectedBun === ingredient._id ? styles.selected : ''}`}
+                    <DraggableIngredient
                         key={ingredient._id}
-                        onClick={() => handleIngredientClick(ingredient)}
-                    >
-                        <img src={ingredient.image} alt={ingredient.name}></img>
-                        <p className={`${styles.itemPrice} text text_type_digits-default`}>{ingredient.price}<CurrencyIcon /></p>
-                        <p className="text text_type_main-default">{ingredient.name}</p>
-                        {clickedIngredients[ingredient._id] && (
-                            <Counter count={clickedIngredients[ingredient._id]} size="default" extraClass={styles.counter} />
-                        )}
-                    </div>
+                        ingredient={ingredient}
+                        onIngredientClick={onIngredientClick}
+                        count={clickedIngredients[ingredient._id] || 0}
+                    />
                 ))}
             </div>
         </div>
@@ -34,45 +59,74 @@ const IngredientsList = ({ title, ingredientsList, onIngredientClick, clickedIng
 IngredientsList.propTypes = {
     title: PropTypes.string.isRequired,
     ingredientsList: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onIngredientClick: PropTypes.func.isRequired,
     clickedIngredients: PropTypes.object.isRequired,
-    selectedBun: PropTypes.string,
+    innerRef: PropTypes.object,
+    onIngredientClick: PropTypes.func.isRequired,
 };
 
-function BurgerIngredients({ ingredients, onAddIngredient }) {
+function BurgerIngredients() {
+    const dispatch = useDispatch();
+    const ingredients = useSelector(state => state.ingredients.ingredients);
+    const clickedIngredients = useSelector(state => state.constructorReducer.ingredientCounts);
     const [current, setCurrent] = useState('bun');
-    const [clickedIngredients, setClickedIngredients] = useState({});
-    const [selectedBun, setSelectedBun] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentIngredient, setCurrentIngredient] = useState(null);
+
+    const bunsRef = useRef(null);
+    const saucesRef = useRef(null);
+    const mainsRef = useRef(null);
+    const containerRef = useRef(null);
 
     const buns = ingredients.filter(ingredient => ingredient.type === 'bun');
     const mains = ingredients.filter(ingredient => ingredient.type === 'main');
     const sauces = ingredients.filter(ingredient => ingredient.type === 'sauce');
 
-    const handleIngredientClick = (ingredient) => {
-        if (ingredient.type === 'bun') {
+    useEffect(() => {
+        dispatch(fetchIngredients());
+    }, [dispatch]);
 
-            if (selectedBun && selectedBun !== ingredient._id) {
-                setClickedIngredients(prevState => ({
-                    ...prevState,
-                    [selectedBun]: null
-                }));
+    useEffect(() => {
+        const container = containerRef.current;
+
+        const handleScroll = () => {
+            if (bunsRef.current && saucesRef.current && mainsRef.current && container) {
+                const bunsTop = bunsRef.current.getBoundingClientRect().top;
+                const saucesTop = saucesRef.current.getBoundingClientRect().top;
+                const mainsTop = mainsRef.current.getBoundingClientRect().top;
+                const containerTop = container.getBoundingClientRect().top;
+
+                const bunsOffset = Math.abs(containerTop - bunsTop);
+                const saucesOffset = Math.abs(containerTop - saucesTop);
+                const mainsOffset = Math.abs(containerTop - mainsTop);
+
+                if (bunsOffset < saucesOffset && bunsOffset < mainsOffset) {
+                    setCurrent('bun');
+                } else if (saucesOffset < mainsOffset) {
+                    setCurrent('sauce');
+                } else {
+                    setCurrent('main');
+                }
             }
+        };
 
-            setSelectedBun(ingredient._id);
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
 
-            setClickedIngredients(prevState => ({
-                ...prevState,
-                [ingredient._id]: 1
-            }));
+    const handleIngredientClick = (ingredient) => {
+        setCurrentIngredient(ingredient);
+        setIsModalOpen(true);
+    };
 
-        } else {
-            setClickedIngredients(prevState => ({
-                ...prevState,
-                [ingredient._id]: (prevState[ingredient._id] || 0) + 1
-            }));
-        }
+    const handleTabClick = (tab) => {
+        setCurrent(tab);
+        const tabRef = tab === 'bun' ? bunsRef : tab === 'sauce' ? saucesRef : mainsRef;
+        tabRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
 
-        onAddIngredient(ingredient);
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setCurrentIngredient(null);
     };
 
     return (
@@ -80,65 +134,47 @@ function BurgerIngredients({ ingredients, onAddIngredient }) {
             <h2 className={`${styles.sectionHeader} text text_type_main-large`}>
                 Соберите бургер
             </h2>
-            <div style={{ display: 'flex' }} className={styles.tabBar}>
-                <Tab value="bun" active={current === 'bun'} onClick={() => setCurrent('bun')}>
+            <div className={styles.tabBar}>
+                <Tab value="bun" active={current === 'bun'} onClick={() => handleTabClick('bun')}>
                     Булки
                 </Tab>
-                <Tab value="sauce" active={current === 'sauce'} onClick={() => setCurrent('sauce')}>
+                <Tab value="sauce" active={current === 'sauce'} onClick={() => handleTabClick('sauce')}>
                     Соусы
                 </Tab>
-                <Tab value="main" active={current === 'main'} onClick={() => setCurrent('main')}>
+                <Tab value="main" active={current === 'main'} onClick={() => handleTabClick('main')}>
                     Начинки
                 </Tab>
             </div>
-            <div className={`custom-scroll ${styles.containerScroll}`}>
-                {current === 'bun' && (
-                    <>
-                        <IngredientsList
-                            title="Булки"
-                            ingredientsList={buns}
-                            onIngredientClick={handleIngredientClick}
-                            clickedIngredients={clickedIngredients}
-                            selectedBun={selectedBun}
-                        />
-                        <IngredientsList
-                            title="Соусы"
-                            ingredientsList={sauces}
-                            onIngredientClick={handleIngredientClick}
-                            clickedIngredients={clickedIngredients}
-                        />
-                        <IngredientsList
-                            title="Начинки"
-                            ingredientsList={mains}
-                            onIngredientClick={handleIngredientClick}
-                            clickedIngredients={clickedIngredients}
-                        />
-                    </>
-                )}
-                {current === 'sauce' && (
-                    <IngredientsList
-                        title="Соусы"
-                        ingredientsList={sauces}
-                        onIngredientClick={handleIngredientClick}
-                        clickedIngredients={clickedIngredients}
-                    />
-                )}
-                {current === 'main' && (
-                    <IngredientsList
-                        title="Начинки"
-                        ingredientsList={mains}
-                        onIngredientClick={handleIngredientClick}
-                        clickedIngredients={clickedIngredients}
-                    />
-                )}
+            <div id="ingredients-container" ref={containerRef} className={`custom-scroll ${styles.containerScroll}`}>
+                <IngredientsList
+                    innerRef={bunsRef}
+                    title="Булки"
+                    ingredientsList={buns}
+                    clickedIngredients={clickedIngredients}
+                    onIngredientClick={handleIngredientClick}
+                />
+                <IngredientsList
+                    innerRef={saucesRef}
+                    title="Соусы"
+                    ingredientsList={sauces}
+                    clickedIngredients={clickedIngredients}
+                    onIngredientClick={handleIngredientClick}
+                />
+                <IngredientsList
+                    innerRef={mainsRef}
+                    title="Начинки"
+                    ingredientsList={mains}
+                    clickedIngredients={clickedIngredients}
+                    onIngredientClick={handleIngredientClick}
+                />
             </div>
+            {isModalOpen && (
+                <Modal onClose={closeModal}>
+                    {currentIngredient && <IngredientDetails {...currentIngredient} />}
+                </Modal>
+            )}
         </section>
     );
 }
-
-BurgerIngredients.propTypes = {
-    ingredients: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onAddIngredient: PropTypes.func.isRequired,
-};
 
 export default BurgerIngredients;

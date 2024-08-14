@@ -11,6 +11,9 @@
     overflow-y: auto;
     scrollbar-color: #8585AD #2F2F37;
     padding-left: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .itemsContainer {
@@ -42,4 +45,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+
+.droppableArea {
+    border: 2px solid transparent;
+    border-radius: 4%;
+    padding: 12px 12px 12px 0;
+    transition: border 0.2s;
+}
+
+.droppableArea.active {
+    border: 2px solid #25abd4d5;
 }
