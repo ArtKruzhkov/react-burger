@@ -1,0 +1,27 @@
+.mainRegisterContainer {
+    margin-top: 179px;
+}
+
+.registerHeader {
+    margin-bottom: 24px;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 88px;
+}
+
+.textWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.linkLogin {
+    color: #4C4CFF;
+    padding: 4px;
+}

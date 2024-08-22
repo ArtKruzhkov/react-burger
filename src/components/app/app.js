@@ -1,16 +1,19 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styles from './app.module.css';
 import AppHeader from '../app-header/app-header';
-import BurgerIngredients from '../burger-ingredients/burger-ingredients';
-import BurgerConstructor from '../burger-constructor/burger-constructor';
 import { fetchIngredients } from '../../services/actions/ingredients-actions';
+import MainPage from '../pages/main/main';
+import IngredientInfoFullPage from '../pages/ingredient-info-full-page/ingredient-info-full-page';
+import RegisterPage from '../pages/register/register';
+import LoginPage from '../pages/login/login';
+import ForgotPasswordPage from '../pages/forgot-password/forgot-password';
+import ResetPasswordPage from '../pages/reset-password/reset-password';
+import ProfilePage from '../pages/profile/profile';
 
 function App() {
   const dispatch = useDispatch();
-  const { ingredients, loading, error } = useSelector(state => state.ingredients);
 
   useEffect(() => {
     dispatch(fetchIngredients());
@@ -20,24 +23,23 @@ function App() {
     <div className={styles.app}>
 
       <AppHeader />
-      <DndProvider backend={HTML5Backend}>
-        <main className={styles.mainContainer}>
-          {loading ? (
-            <div><p className="text text_type_main-default">Loading...</p></div>
-          ) : error ? (
-            <div><p className="text text_type_main-default">{error}</p></div>
-          ) : ingredients && ingredients.length ? (
-            <>
-              <BurgerIngredients />
-              <BurgerConstructor />
-            </>
-          ) : (
-            <div><p className="text text_type_main-default">No ingredients available</p></div>
-          )}
-        </main>
-      </DndProvider>
+      <Router>
+        <Routes>
+          <Route path='/' element={<MainPage />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+          <Route path='/reset-password' element={<ResetPasswordPage />} />
+          <Route path='/profile/*' element={<ProfilePage />} />
+          <Route path='/ingredients/:id' element={<IngredientInfoFullPage />} />
+        </Routes>
+      </Router>
     </div >
   );
 }
 
 export default App;
+
+
+
+

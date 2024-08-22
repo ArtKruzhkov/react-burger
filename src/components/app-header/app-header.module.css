@@ -7,11 +7,16 @@ a {
     align-items: center;
     padding: 16px;
     justify-content: space-around;
+    background-color: #1c1c21;
 }
 
 .navbarHeader {
     display: flex;
     gap: 8px;
+}
+
+.navbarHeaderPA {
+    margin-left: 176px;
 }
 
 .linkContainer {

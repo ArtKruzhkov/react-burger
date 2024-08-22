@@ -27,7 +27,7 @@ function AppHeader() {
                 </a>
             </nav>
             <Logo />
-            <nav className={`${styles.navbarHeader}`}>
+            <nav className={`${styles.navbarHeader} ${styles.navbarHeaderPA}`}>
                 <a href="#">
                     <div
                         style={{ color: 'white' }}
