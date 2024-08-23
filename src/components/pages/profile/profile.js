@@ -1,19 +1,43 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { NavLink, Route, Routes, useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './profile.module.css';
-import { useState, useRef } from "react";
 import FormChange from "./form-change";
+import { logoutUser, fetchUserData, updateUserData } from '../../../services/actions/auth-actions';
 
 function ProfilePage() {
-    const initialFormValues = {
-        value1: 'Марк',
-        value2: 'mail@stellar.burgers',
-        value3: 'pasSword1'
-    };
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const user = useSelector(state => state.auth.user);
 
-    const [formValues, setFormValues] = useState(initialFormValues);
-    const [originalValues] = useState(initialFormValues);
+    const [formValues, setFormValues] = useState({
+        value1: user?.name || '',
+        value2: user?.email || '',
+        value3: ''
+    });
+
+    const [originalValues, setOriginalValues] = useState(formValues);
     const [isDisabled, setIsDisabled] = useState(true);
     const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (!user) {
+            dispatch(fetchUserData());
+        }
+    }, [dispatch, user]);
+
+    useEffect(() => {
+        setFormValues({
+            value1: user?.name || '',
+            value2: user?.email || '',
+            value3: ''
+        });
+        setOriginalValues({
+            value1: user?.name || '',
+            value2: user?.email || '',
+            value3: ''
+        });
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -33,7 +57,17 @@ function ProfilePage() {
     };
 
     const handleCancel = () => {
-        setFormValues(originalValues);  // Восстановление исходных значений
+        setFormValues(originalValues);
+    };
+
+    const handleSave = () => {
+        dispatch(updateUserData(formValues.value2, formValues.value1));
+        setOriginalValues(formValues);
+    };
+
+    const handleLogout = async () => {
+        await logoutUser(dispatch);
+        navigate('/login');
     };
 
     return (
@@ -46,7 +80,7 @@ function ProfilePage() {
                         className={({ isActive }) =>
                             isActive
                                 ? `${styles.linkProfile} ${styles.linkProfileActive} text text_type_main-medium`
-                                : `${styles.linkProfile} text text_type_main-medium text_color_inactive`
+                                : `${styles.linkProfile} text text_type_main-medium text_color_inactive}`
                         }
                     >
                         Профиль
@@ -56,23 +90,20 @@ function ProfilePage() {
                         className={({ isActive }) =>
                             isActive
                                 ? `${styles.linkProfile} ${styles.linkProfileActive} text text_type_main-medium`
-                                : `${styles.linkProfile} text text_type_main-medium text_color_inactive`
+                                : `${styles.linkProfile} text text_type_main-medium text_color_inactive}`
                         }
                     >
                         История заказов
                     </NavLink>
-                    <NavLink
-                        to="/"
-                        className={({ isActive }) =>
-                            isActive
-                                ? `${styles.linkProfile} ${styles.linkProfileActive} text text_type_main-medium`
-                                : `${styles.linkProfile} text text_type_main-medium text_color_inactive`
-                        }
+                    <Link
+                        to="#"
+                        onClick={handleLogout}
+                        className={`${styles.linkProfile} text text_type_main-medium text_color_inactive}`}
                     >
                         Выход
-                    </NavLink>
+                    </Link>
                 </nav>
-                <p className={`${styles.textInfoChange} text text_type_main-default text_color_inactive`}>
+                <p className={`${styles.textInfoChange} text text_type_main-default text_color_inactive}`}>
                     В этом разделе вы можете изменить свои персональные данные
                 </p>
             </div>
@@ -89,6 +120,7 @@ function ProfilePage() {
                                 handleBlur={handleBlur}
                                 inputRef={inputRef}
                                 handleCancel={handleCancel}
+                                handleSave={handleSave}
                             />
                         }
                     />
@@ -103,5 +135,3 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
-
-

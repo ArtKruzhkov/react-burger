@@ -1,13 +1,19 @@
 import { PasswordInput, Input, Button } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPassword } from "../../../services/actions/auth-actions";
 import styles from './reset-password.module.css';
 
 function ResetPasswordPage() {
     const [formValues, setFormValues] = useState({
-        value1: '',
-        value2: ''
+        password: '',
+        token: ''
     });
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const loading = useSelector(state => state.auth.loading);
+    const passwordResetSuccess = useSelector(state => state.auth.passwordResetSuccess);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -17,27 +23,42 @@ function ResetPasswordPage() {
         });
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        dispatch(resetPassword(formValues.password, formValues.token));
+        setFormValues({
+            password: '',
+            token: ''
+        });
+    };
+
+    useEffect(() => {
+        if (passwordResetSuccess) {
+            navigate('/login');
+        }
+    }, [passwordResetSuccess, navigate]);
+
     return (
         <div className={styles.resetPasswordConstainer}>
             <h1 className={`${styles.resetPasswordHeader} text text_type_main-medium`}>Восстановление пароля</h1>
-            <form className={styles.formResetPasswordContainer}>
+            <form className={styles.formResetPasswordContainer} onSubmit={handleSubmit}>
                 <PasswordInput
                     placeholder={'Введите новый пароль'}
                     onChange={handleChange}
-                    value={formValues.value1}
-                    name={'value1'}
+                    value={formValues.password}
+                    name={'password'}
                 />
                 <Input
                     type={'text'}
                     placeholder={'Введите код из письма'}
                     onChange={handleChange}
-                    value={formValues.value2}
-                    name={'value2'}
+                    value={formValues.token}
+                    name={'token'}
                     size={'default'}
                 />
                 <div>
-                    <Button htmlType="button" type="primary" size="large">
-                        Восстановить
+                    <Button htmlType="submit" type="primary" size="large" disabled={loading}>
+                        {loading ? 'Загрузка...' : 'Сохранить'}
                     </Button>
                 </div>
             </form>

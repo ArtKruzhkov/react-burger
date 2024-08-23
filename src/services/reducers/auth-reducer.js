@@ -7,7 +7,9 @@ const initialState = {
     refreshToken: null,
     isAuthenticated: false,
     loading: false,
-    error: null
+    error: null,
+    passwordResetSuccess: false,
+    passwordResetRequestSent: false,
 };
 
 const authSlice = createSlice({
@@ -24,8 +26,8 @@ const authSlice = createSlice({
             state.refreshToken = action.payload.refreshToken;
             state.isAuthenticated = true;
             state.loading = false;
-
             Cookies.set('refreshToken', action.payload.refreshToken, { expires: 7 });
+            localStorage.setItem('accessToken', action.payload.accessToken);
         },
         authFailure: (state, action) => {
             state.loading = false;
@@ -36,16 +38,47 @@ const authSlice = createSlice({
             state.accessToken = null;
             state.refreshToken = null;
             state.isAuthenticated = false;
-
-            // Удаляем refreshToken из куки
             Cookies.remove('refreshToken');
+            localStorage.removeItem('accessToken');
         },
         tokenRefreshed: (state, action) => {
             state.accessToken = action.payload.accessToken;
-        }
+        },
+        userUpdated: (state, action) => {
+            state.user = action.payload.user;
+        },
+        passwordResetRequestSuccess: (state) => {
+            state.passwordResetRequestSent = true;
+            state.loading = false;
+        },
+        passwordResetRequestFailure: (state, action) => {
+            state.passwordResetRequestSent = false;
+            state.error = action.payload;
+            state.loading = false;
+        },
+        passwordResetSuccess: (state) => {
+            state.passwordResetSuccess = true;
+            state.loading = false;
+        },
+        passwordResetFailure: (state, action) => {
+            state.passwordResetSuccess = false;
+            state.error = action.payload;
+            state.loading = false;
+        },
     }
 });
 
-export const { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed } = authSlice.actions;
-export default authSlice.reducer;
+export const {
+    authRequest,
+    authSuccess,
+    authFailure,
+    logoutSuccess,
+    tokenRefreshed,
+    userUpdated,
+    passwordResetRequestSuccess,
+    passwordResetRequestFailure,
+    passwordResetSuccess,
+    passwordResetFailure,
+} = authSlice.actions;
 
+export default authSlice.reducer;

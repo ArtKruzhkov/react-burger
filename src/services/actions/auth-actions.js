@@ -1,5 +1,5 @@
-import { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed } from '../reducers/auth-reducer';
-import { BASE_URL } from '../../data/constants'; // URL, к которому будут отправляться запросы
+import { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed, userUpdated, passwordResetRequestSuccess, passwordResetRequestFailure, passwordResetSuccess, passwordResetFailure } from '../reducers/auth-reducer';
+import { BASE_URL } from '../../data/constants';
 import Cookies from 'js-cookie';
 
 export const registerUser = (email, password, name) => async (dispatch) => {
@@ -38,7 +38,6 @@ export const loginUser = (email, password) => async (dispatch) => {
             body: JSON.stringify({ email, password })
         });
         const data = await response.json();
-        console.log('Login response:', data);
         if (data.success) {
             dispatch(authSuccess({
                 user: data.user,
@@ -53,10 +52,10 @@ export const loginUser = (email, password) => async (dispatch) => {
     }
 };
 
-
 export const logoutUser = async (dispatch) => {
     dispatch(authRequest());
     const refreshToken = Cookies.get('refreshToken');
+
     try {
         const response = await fetch(`${BASE_URL}/auth/logout`, {
             method: 'POST',
@@ -68,12 +67,55 @@ export const logoutUser = async (dispatch) => {
         const data = await response.json();
         if (data.success) {
             dispatch(logoutSuccess());
-            Cookies.remove('refreshToken');
         } else {
             dispatch(authFailure(data.success));
         }
     } catch (error) {
         dispatch(authFailure('Logout failed'));
+    }
+};
+
+export const requestPasswordReset = (email) => async (dispatch) => {
+    dispatch(authRequest());
+
+    try {
+        const response = await fetch(`${BASE_URL}/password-reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        if (data.success) {
+            dispatch(passwordResetRequestSuccess());
+        } else {
+            dispatch(passwordResetRequestFailure(data.success));
+        }
+    } catch (error) {
+        dispatch(passwordResetRequestFailure('Failed to request password reset'));
+    }
+};
+
+export const resetPassword = (password, token) => async (dispatch) => {
+    dispatch(authRequest());
+
+    try {
+        const response = await fetch(`${BASE_URL}/password-reset/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password, token })
+        });
+        const data = await response.json();
+        if (data.success) {
+            dispatch(passwordResetSuccess());
+        } else {
+            dispatch(passwordResetFailure(data.message));
+        }
+    } catch (error) {
+        dispatch(passwordResetFailure('Failed to reset password'));
     }
 };
 
@@ -105,4 +147,55 @@ export const refreshToken = () => async (dispatch) => {
     }
 };
 
+export const fetchUserData = () => async (dispatch) => {
+    dispatch(authRequest());
+    const accessToken = localStorage.getItem('accessToken');
 
+    try {
+        const response = await fetch(`${BASE_URL}/auth/user`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${accessToken}`
+            }
+        });
+        const data = await response.json();
+        if (data.success) {
+            dispatch(authSuccess({
+                user: data.user,
+                accessToken: accessToken,
+                refreshToken: Cookies.get('refreshToken')
+            }));
+        } else {
+            dispatch(authFailure('Failed to fetch user data'));
+        }
+    } catch (error) {
+        dispatch(authFailure('Failed to fetch user data'));
+    }
+};
+
+export const updateUserData = (email, name) => async (dispatch) => {
+    dispatch(authRequest());
+    const accessToken = localStorage.getItem('accessToken');
+
+    try {
+        const response = await fetch(`${BASE_URL}/auth/user`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${accessToken}`
+            },
+            body: JSON.stringify({ email, name })
+        });
+        const data = await response.json();
+        if (data.success) {
+            dispatch(userUpdated({
+                user: data.user
+            }));
+        } else {
+            dispatch(authFailure('Failed to update user data'));
+        }
+    } catch (error) {
+        dispatch(authFailure('Failed to update user data'));
+    }
+};

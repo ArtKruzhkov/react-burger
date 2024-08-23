@@ -1,47 +1,8 @@
-// import { Input, EmailInput, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
-// import styles from './profile.module.css';
-
-// function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleBlur, inputRef }) {
-//     return (
-//         <form className={styles.formProfileContainer}>
-//             <Input
-//                 type={'text'}
-//                 placeholder={'Имя'}
-//                 onChange={handleChange}
-//                 icon={'EditIcon'}
-//                 value={formValues.value1}
-//                 name={'value1'}
-//                 onIconClick={onIconClick}
-//                 disabled={isDisabled}
-//                 size={'default'}
-//                 ref={inputRef}
-//                 onBlur={handleBlur}
-//             />
-//             <EmailInput
-//                 onChange={handleChange}
-//                 value={formValues.value2}
-//                 name={'value2'}
-//                 placeholder="Логин"
-//                 isIcon={true}
-//             />
-//             <PasswordInput
-//                 onChange={handleChange}
-//                 value={formValues.value3}
-//                 name={'value3'}
-//                 icon="EditIcon"
-//             />
-//         </form>
-//     );
-// }
-
-// export default FormChange;
-
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input, EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './profile.module.css';
 
-function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleBlur, inputRef, handleCancel }) {
+function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleBlur, inputRef, handleCancel, handleSave }) {
     const [isChanging, setIsChanging] = useState(false);
 
     const handleFieldChange = (e) => {
@@ -54,8 +15,8 @@ function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleB
         setIsChanging(false);
     };
 
-    const handleSave = () => {
-        // Выполните действие для сохранения данных
+    const handleSaveForm = () => {
+        handleSave();
         setIsChanging(false);
     };
 
@@ -99,7 +60,7 @@ function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleB
                     <Button htmlType="button" type="secondary" size="medium" onClick={handleCancelAndReset}>
                         Отмена
                     </Button>
-                    <Button htmlType="button" type="primary" size="medium" onClick={handleSave}>
+                    <Button htmlType="button" type="primary" size="medium" onClick={handleSaveForm}>
                         Сохранить
                     </Button>
                 </div>
@@ -109,4 +70,3 @@ function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleB
 }
 
 export default FormChange;
-

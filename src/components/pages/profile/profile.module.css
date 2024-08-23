@@ -5,7 +5,7 @@
 }
 
 .userContainer {
-    margin-left: 7%;
+    margin-left: 18%;
     width: 320px;
 }
 
@@ -24,6 +24,7 @@
 }
 
 .textInfoChange {
+    color: #8585AD;
     text-align: left;
     margin-top: 80px;
 }
@@ -34,6 +35,7 @@
     width: inherit;
     text-align: left;
     padding: 15px 0;
+    transition: color 0.3s ease;
 }
 
 .linkProfileActive {

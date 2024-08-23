@@ -16,11 +16,27 @@ a {
 }
 
 .navbarHeaderPA {
-    margin-left: 176px;
+    margin-left: 162px;
 }
 
 .linkContainer {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: #8585AD;
+    padding: 20px;
+    transition: color 0.3s ease;
+}
+
+.linkContainerActive {
+    color: #F2F2F3;
+}
+
+.linkContainer svg {
+    fill: #8585AD;
+    transition: fill 0.3s ease;
+}
+
+.linkContainerActive svg {
+    fill: #F2F2F3;
 }
