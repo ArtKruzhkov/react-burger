@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function IngredientDetails({ image_large, name, calories, proteins, fat, carbohydrates }) {
     return (
         <div className={styles.ingredientDetailsWrap}>
-            <h3 className="text text_type_main-large">Детали ингредиента</h3>
+            <h3 className={`${styles.ingredientDetailsWrapTitle} text text_type_main-large`}>Детали ингредиента</h3>
             <div className={styles.ingredientDetails}>
                 <img src={image_large} alt={name} className={styles.ingredientImage} />
                 <p className={`${styles.ingredientTitle} text text_type_main-medium`}>{name}</p>

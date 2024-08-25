@@ -29,6 +29,10 @@ const authSlice = createSlice({
             Cookies.set('refreshToken', action.payload.refreshToken, { expires: 7 });
             localStorage.setItem('accessToken', action.payload.accessToken);
         },
+        registerSuccess: (state, action) => {
+            state.user = action.payload.user;
+            state.loading = false;
+        },
         authFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;

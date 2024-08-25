@@ -2,6 +2,10 @@
     padding: 40px 0 60px;
 }
 
+.ingredientDetailsWrapTitle {
+    text-align: center;
+}
+
 .ingredientDetails {
     display: flex;
     flex-direction: column;

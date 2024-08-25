@@ -2,7 +2,7 @@ import { PasswordInput, Input, Button } from "@ya.praktikum/react-developer-burg
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { resetPassword } from "../../../services/actions/auth-actions";
+import { resetPassword } from "../../services/actions/auth-actions";
 import styles from './reset-password.module.css';
 
 function ResetPasswordPage() {
@@ -10,10 +10,12 @@ function ResetPasswordPage() {
         password: '',
         token: ''
     });
+    const [error, setError] = useState(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const loading = useSelector(state => state.auth.loading);
     const passwordResetSuccess = useSelector(state => state.auth.passwordResetSuccess);
+    const resetRequestSent = useSelector(state => state.auth.passwordResetRequestSent);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,12 +27,22 @@ function ResetPasswordPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!formValues.password || !formValues.token) {
+            setError('Заполните все поля');
+            return;
+        }
         dispatch(resetPassword(formValues.password, formValues.token));
         setFormValues({
             password: '',
             token: ''
         });
     };
+
+    useEffect(() => {
+        if (!resetRequestSent) {
+            navigate('/forgot-password');
+        }
+    }, [navigate]);
 
     useEffect(() => {
         if (passwordResetSuccess) {
@@ -56,6 +68,7 @@ function ResetPasswordPage() {
                     name={'token'}
                     size={'default'}
                 />
+                {error && <p className="text text_type_main-default text_color_error">{error}</p>}
                 <div>
                     <Button htmlType="submit" type="primary" size="large" disabled={loading}>
                         {loading ? 'Загрузка...' : 'Сохранить'}

@@ -1,33 +1,34 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData } from '../../services/actions/auth-actions';
 
-const ProtectedRouteElement = ({ element }) => {
+export default function ProtectedRoute({ children, anonymous = false }) {
     const dispatch = useDispatch();
+    const isLoggedIn = useSelector((store) => store.auth.isAuthenticated);
     const [isLoading, setIsLoading] = useState(true);
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const location = useLocation();
+    const from = location.state?.from || '/';
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            dispatch(fetchUserData())
-                .finally(() => setIsLoading(false));
+        if (!isLoggedIn) {
+            dispatch(fetchUserData()).finally(() => setIsLoading(false));
         } else {
             setIsLoading(false);
         }
-    }, [dispatch, isAuthenticated]);
+    }, [dispatch, isLoggedIn]);
 
     if (isLoading) {
         return <div><p className="text text_type_main-default">Loading...</p></div>;
     }
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+    if (anonymous && isLoggedIn) {
+        return <Navigate to={from} />;
     }
 
-    if (isAuthenticated) {
-        return element
+    if (!anonymous && !isLoggedIn) {
+        return <Navigate to="/login" state={{ from: location }} />;
     }
-};
 
-export default ProtectedRouteElement;
+    return children;
+}

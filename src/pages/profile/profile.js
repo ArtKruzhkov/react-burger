@@ -3,7 +3,7 @@ import { NavLink, Route, Routes, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './profile.module.css';
 import FormChange from "./form-change";
-import { logoutUser, fetchUserData, updateUserData } from '../../../services/actions/auth-actions';
+import { logoutUser, fetchUserData, updateUserData } from "../../services/actions/auth-actions";
 
 function ProfilePage() {
     const dispatch = useDispatch();
@@ -18,6 +18,7 @@ function ProfilePage() {
 
     const [originalValues, setOriginalValues] = useState(formValues);
     const [isDisabled, setIsDisabled] = useState(true);
+    const [errors, setErrors] = useState({});
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -60,9 +61,21 @@ function ProfilePage() {
         setFormValues(originalValues);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formValues.value1) newErrors.value1 = 'Имя обязательно для заполнения';
+        if (!formValues.value2) newErrors.value2 = 'Email обязательно для заполнения';
+        if (!formValues.value3) newErrors.value3 = 'Пароль обязательно для заполнения';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = () => {
-        dispatch(updateUserData(formValues.value2, formValues.value1));
-        setOriginalValues(formValues);
+        if (validateForm()) {
+            dispatch(updateUserData(formValues.value2, formValues.value1));
+            setOriginalValues(formValues);
+            setErrors({});
+        }
     };
 
     const handleLogout = async () => {
@@ -121,6 +134,7 @@ function ProfilePage() {
                                 inputRef={inputRef}
                                 handleCancel={handleCancel}
                                 handleSave={handleSave}
+                                errors={errors}
                             />
                         }
                     />

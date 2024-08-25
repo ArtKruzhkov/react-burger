@@ -1,8 +1,8 @@
 import { Input, EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
-import { registerUser } from "../../../services/actions/auth-actions";
-import { Link } from "react-router-dom";
+import { registerUser } from "../../services/actions/auth-actions";
+import { Link, useNavigate } from "react-router-dom";
 import styles from './register.module.css';
 
 function RegisterPage() {
@@ -11,8 +11,10 @@ function RegisterPage() {
         email: '',
         password: ''
     });
+    const [error, setError] = useState(null);
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,7 +26,14 @@ function RegisterPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(registerUser(formValues.email, formValues.password, formValues.name));
+        if (!formValues.name || !formValues.email || !formValues.password) {
+            setError('Заполните все поля');
+            return;
+        }
+        dispatch(registerUser(formValues.email, formValues.password, formValues.name))
+            .then(() => {
+                navigate('/login');
+            });
         setFormValues({
             name: '',
             email: '',
@@ -58,6 +67,7 @@ function RegisterPage() {
                     value={formValues.password}
                     name={'password'}
                 />
+                {error && <p className="text text_type_main-default text_color_error">{error}</p>}
                 <div>
                     <Button htmlType="submit" type="primary" size="large">
                         Зарегистрироваться

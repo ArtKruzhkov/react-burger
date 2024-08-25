@@ -1,6 +1,7 @@
 import { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed, userUpdated, passwordResetRequestSuccess, passwordResetRequestFailure, passwordResetSuccess, passwordResetFailure } from '../reducers/auth-reducer';
 import { BASE_URL } from '../../data/constants';
 import Cookies from 'js-cookie';
+import { checkResponse } from '../../data/api';
 
 export const registerUser = (email, password, name) => async (dispatch) => {
     dispatch(authRequest());
@@ -12,12 +13,10 @@ export const registerUser = (email, password, name) => async (dispatch) => {
             },
             body: JSON.stringify({ email, password, name })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
-            dispatch(authSuccess({
+            dispatch(registerSuccess({
                 user: data.user,
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken
             }));
         } else {
             dispatch(authFailure(data.success));
@@ -37,18 +36,21 @@ export const loginUser = (email, password) => async (dispatch) => {
             },
             body: JSON.stringify({ email, password })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(authSuccess({
                 user: data.user,
                 accessToken: data.accessToken,
                 refreshToken: data.refreshToken
             }));
+            return { success: true };
         } else {
-            dispatch(authFailure(data.success));
+            dispatch(authFailure('Неправильный логин или пароль'));
+            return { success: false };
         }
     } catch (error) {
-        dispatch(authFailure('Login failed'));
+        dispatch(authFailure('Ошибка авторизации'));
+        return { success: false };
     }
 };
 
@@ -64,7 +66,7 @@ export const logoutUser = async (dispatch) => {
             },
             body: JSON.stringify({ token: refreshToken })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(logoutSuccess());
         } else {
@@ -86,7 +88,7 @@ export const requestPasswordReset = (email) => async (dispatch) => {
             },
             body: JSON.stringify({ email })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(passwordResetRequestSuccess());
         } else {
@@ -108,7 +110,7 @@ export const resetPassword = (password, token) => async (dispatch) => {
             },
             body: JSON.stringify({ password, token })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(passwordResetSuccess());
         } else {
@@ -136,7 +138,7 @@ export const refreshToken = () => async (dispatch) => {
             },
             body: JSON.stringify({ token: refreshToken })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(tokenRefreshed(data.accessToken));
         } else {
@@ -159,7 +161,7 @@ export const fetchUserData = () => async (dispatch) => {
                 'Authorization': `${accessToken}`
             }
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(authSuccess({
                 user: data.user,
@@ -187,7 +189,7 @@ export const updateUserData = (email, name) => async (dispatch) => {
             },
             body: JSON.stringify({ email, name })
         });
-        const data = await response.json();
+        const data = await checkResponse(response);
         if (data.success) {
             dispatch(userUpdated({
                 user: data.user

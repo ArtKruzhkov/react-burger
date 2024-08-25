@@ -1,5 +1,5 @@
 import { useDrop, useDrag } from 'react-dnd';
-import { ItemTypes } from '../../data/itemTypes';
+import { ItemTypes } from '../../data/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
@@ -8,6 +8,7 @@ import OrderDetails from '../order-details/order-details';
 import { createOrder } from '../../services/actions/order-actions';
 import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/actions/constructor-actions';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, otherIngredients }) => {
     const [, drag] = useDrag({
@@ -61,8 +62,10 @@ const DroppableArea = ({ onDrop, children }) => {
 
 const BurgerConstructor = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const selectedIngredients = useSelector(state => state.constructorReducer.ingredients);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const bun = selectedIngredients.find(ingredient => ingredient.type === 'bun');
     const otherIngredients = selectedIngredients.filter(ingredient => ingredient.type !== 'bun');
 
@@ -75,6 +78,11 @@ const BurgerConstructor = () => {
     const totalPrice = calculateTotalPrice();
 
     const openOrderModal = () => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+
         const ingredientIds = selectedIngredients.map(ingredient => ingredient._id);
 
         if (ingredientIds.length === 0) {

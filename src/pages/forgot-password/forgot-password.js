@@ -1,25 +1,29 @@
 import { EmailInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { requestPasswordReset } from '../../../services/actions/auth-actions';
+import { requestPasswordReset } from "../../services/actions/auth-actions";
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './forgot-password.module.css';
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
+    const [error, setError] = useState(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const loading = useSelector(state => state.auth.loading);
     const passwordResetRequestSent = useSelector(state => state.auth.passwordResetRequestSent);
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!email) {
+            setError('Заполните все поля');
+            return;
+        }
         dispatch(requestPasswordReset(email));
-    }
+    };
 
     useEffect(() => {
         if (passwordResetRequestSent) {
@@ -37,9 +41,10 @@ function ForgotPasswordPage() {
                     isIcon={false}
                     placeholder={'Укажите e-mail'}
                 />
+                {error && <p className="text text_type_main-default text_color_error">{error}</p>}
                 <div>
-                    <Button htmlType="submit" type="primary" size="large" disabled={loading}>
-                        {loading ? 'Загрузка...' : 'Восстановить'}
+                    <Button htmlType="submit" type="primary" size="large">
+                        Восстановить
                     </Button>
                 </div>
             </form>
