@@ -18,21 +18,23 @@ import IngredientDetails from '../ingredient-details/ingredient-details';
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const state = location.state;
   const navigate = useNavigate();
+
+  const state = location.state || {};
+  const backgroundLocation = state.backgroundLocation || location;
 
   useEffect(() => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
   const closeModal = () => {
-    navigate(state?.background?.pathname || '/');
+    navigate(-1);
   };
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <Routes location={state?.background || location}>
+      <Routes location={backgroundLocation}>
         <Route path="/" element={<MainPage />} />
         <Route path="/ingredients/:id" element={<IngredientInfoFullPage />} />
         <Route path="/profile/*" element={<ProtectedRoute children={<ProfilePage />} />} />
@@ -42,8 +44,8 @@ function App() {
         <Route path="/reset-password" element={<ProtectedRoute anonymous={true} children={<ResetPasswordPage />} />} />
       </Routes>
 
-      {state?.modal && (
-        <Routes>
+      {state.backgroundLocation && (
+        <Routes location={location}>
           <Route
             path="/ingredients/:id"
             element={

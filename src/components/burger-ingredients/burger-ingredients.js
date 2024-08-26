@@ -105,7 +105,7 @@ function BurgerIngredients() {
     }, []);
 
     const handleIngredientClick = (ingredient) => {
-        navigate(`/ingredients/${ingredient._id}`, { state: { modal: true, ingredient } });
+        navigate(`/ingredients/${ingredient._id}`, { state: { backgroundLocation: location.pathname, ingredient } });
     };
 
     const handleTabClick = (tab) => {
