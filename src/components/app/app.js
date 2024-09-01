@@ -1,42 +1,62 @@
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import styles from './app.module.css';
 import AppHeader from '../app-header/app-header';
-import BurgerIngredients from '../burger-ingredients/burger-ingredients';
-import BurgerConstructor from '../burger-constructor/burger-constructor';
 import { fetchIngredients } from '../../services/actions/ingredients-actions';
+import MainPage from '../../pages/main/main';
+import IngredientInfoFullPage from '../../pages/ingredient-info-full-page/ingredient-info-full-page';
+import RegisterPage from '../../pages/register/register';
+import LoginPage from '../../pages/login/login';
+import ForgotPasswordPage from '../../pages/forgot-password/forgot-password';
+import ResetPasswordPage from '../../pages/reset-password/reset-password';
+import ProfilePage from '../../pages/profile/profile';
+import ProtectedRoute from '../protected-route/protected-route';
+import Modal from '../modals/modal/modal';
+import IngredientDetails from '../ingredient-details/ingredient-details';
 
 function App() {
   const dispatch = useDispatch();
-  const { ingredients, loading, error } = useSelector(state => state.ingredients);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const state = location.state || {};
+  const backgroundLocation = state.backgroundLocation || location;
 
   useEffect(() => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
+  const closeModal = () => {
+    navigate(-1);
+  };
+
   return (
     <div className={styles.app}>
-
       <AppHeader />
-      <DndProvider backend={HTML5Backend}>
-        <main className={styles.mainContainer}>
-          {loading ? (
-            <div><p className="text text_type_main-default">Loading...</p></div>
-          ) : error ? (
-            <div><p className="text text_type_main-default">{error}</p></div>
-          ) : ingredients && ingredients.length ? (
-            <>
-              <BurgerIngredients />
-              <BurgerConstructor />
-            </>
-          ) : (
-            <div><p className="text text_type_main-default">No ingredients available</p></div>
-          )}
-        </main>
-      </DndProvider>
-    </div >
+      <Routes location={backgroundLocation}>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/ingredients/:id" element={<IngredientInfoFullPage />} />
+        <Route path="/profile/*" element={<ProtectedRoute children={<ProfilePage />} />} />
+        <Route path="/login" element={<ProtectedRoute anonymous={true} children={<LoginPage />} />} />
+        <Route path="/register" element={<ProtectedRoute anonymous={true} children={<RegisterPage />} />} />
+        <Route path="/forgot-password" element={<ProtectedRoute anonymous={true} children={<ForgotPasswordPage />} />} />
+        <Route path="/reset-password" element={<ProtectedRoute anonymous={true} children={<ResetPasswordPage />} />} />
+      </Routes>
+
+      {state.backgroundLocation && (
+        <Routes location={location}>
+          <Route
+            path="/ingredients/:id"
+            element={
+              <Modal onClose={closeModal}>
+                <IngredientDetails {...state.ingredient} />
+              </Modal>
+            }
+          />
+        </Routes>
+      )}
+    </div>
   );
 }
 

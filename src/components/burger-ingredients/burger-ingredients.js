@@ -1,13 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
-import { useDrag } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
-import { fetchIngredients } from '../../services/actions/ingredients-actions';
-import { ItemTypes } from '../../data/itemTypes';
-import Modal from '../modals/modal/modal';
-import IngredientDetails from '../ingredient-details/ingredient-details';
+import { ItemTypes } from '../../data/constants';
+import { useDrag } from 'react-dnd';
 import styles from './burger-ingredients.module.css';
+import PropTypes from 'prop-types';
 
 const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
     const [, drag] = useDrag({
@@ -30,7 +28,6 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
         </div>
     );
 };
-
 
 DraggableIngredient.propTypes = {
     ingredient: PropTypes.object.isRequired,
@@ -65,12 +62,10 @@ IngredientsList.propTypes = {
 };
 
 function BurgerIngredients() {
-    const dispatch = useDispatch();
     const ingredients = useSelector(state => state.ingredients.ingredients);
     const clickedIngredients = useSelector(state => state.constructorReducer.ingredientCounts);
     const [current, setCurrent] = useState('bun');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentIngredient, setCurrentIngredient] = useState(null);
+    const navigate = useNavigate();
 
     const bunsRef = useRef(null);
     const saucesRef = useRef(null);
@@ -80,10 +75,6 @@ function BurgerIngredients() {
     const buns = ingredients.filter(ingredient => ingredient.type === 'bun');
     const mains = ingredients.filter(ingredient => ingredient.type === 'main');
     const sauces = ingredients.filter(ingredient => ingredient.type === 'sauce');
-
-    useEffect(() => {
-        dispatch(fetchIngredients());
-    }, [dispatch]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -114,19 +105,13 @@ function BurgerIngredients() {
     }, []);
 
     const handleIngredientClick = (ingredient) => {
-        setCurrentIngredient(ingredient);
-        setIsModalOpen(true);
+        navigate(`/ingredients/${ingredient._id}`, { state: { backgroundLocation: location.pathname, ingredient } });
     };
 
     const handleTabClick = (tab) => {
         setCurrent(tab);
         const tabRef = tab === 'bun' ? bunsRef : tab === 'sauce' ? saucesRef : mainsRef;
         tabRef.current.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setCurrentIngredient(null);
     };
 
     return (
@@ -146,33 +131,46 @@ function BurgerIngredients() {
                 </Tab>
             </div>
             <div id="ingredients-container" ref={containerRef} className={`custom-scroll ${styles.containerScroll}`}>
-                <IngredientsList
-                    innerRef={bunsRef}
-                    title="Булки"
-                    ingredientsList={buns}
-                    clickedIngredients={clickedIngredients}
-                    onIngredientClick={handleIngredientClick}
-                />
-                <IngredientsList
-                    innerRef={saucesRef}
-                    title="Соусы"
-                    ingredientsList={sauces}
-                    clickedIngredients={clickedIngredients}
-                    onIngredientClick={handleIngredientClick}
-                />
-                <IngredientsList
-                    innerRef={mainsRef}
-                    title="Начинки"
-                    ingredientsList={mains}
-                    clickedIngredients={clickedIngredients}
-                    onIngredientClick={handleIngredientClick}
-                />
+                <div ref={bunsRef}>
+                    <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Булки</h3>
+                    <div className={styles.itemsContainer}>
+                        {buns.map(ingredient => (
+                            <DraggableIngredient
+                                key={ingredient._id}
+                                ingredient={ingredient}
+                                onIngredientClick={handleIngredientClick}
+                                count={clickedIngredients[ingredient._id] || 0}
+                            />
+                        ))}
+                    </div>
+                </div>
+                <div ref={saucesRef}>
+                    <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Соусы</h3>
+                    <div className={styles.itemsContainer}>
+                        {sauces.map(ingredient => (
+                            <DraggableIngredient
+                                key={ingredient._id}
+                                ingredient={ingredient}
+                                onIngredientClick={handleIngredientClick}
+                                count={clickedIngredients[ingredient._id] || 0}
+                            />
+                        ))}
+                    </div>
+                </div>
+                <div ref={mainsRef}>
+                    <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Начинки</h3>
+                    <div className={styles.itemsContainer}>
+                        {mains.map(ingredient => (
+                            <DraggableIngredient
+                                key={ingredient._id}
+                                ingredient={ingredient}
+                                onIngredientClick={handleIngredientClick}
+                                count={clickedIngredients[ingredient._id] || 0}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
-            {isModalOpen && (
-                <Modal onClose={closeModal}>
-                    {currentIngredient && <IngredientDetails {...currentIngredient} />}
-                </Modal>
-            )}
         </section>
     );
 }
