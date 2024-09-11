@@ -15,7 +15,7 @@ function AppHeader() {
                             : `${styles.linkContainer} text text_type_main-default text_color_inactive`
                     }
                 >
-                    <BurgerIcon />
+                    <BurgerIcon type="primary" />
                     Конструктор
                 </NavLink>
                 <NavLink

@@ -1,22 +1,28 @@
 import { Input, EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { registerUser } from "../../services/actions/auth-actions";
 import { Link, useNavigate } from "react-router-dom";
 import styles from './register.module.css';
 
+interface IFormValues {
+    name: string;
+    email: string;
+    password: string;
+}
+
 function RegisterPage() {
-    const [formValues, setFormValues] = useState({
+    const [formValues, setFormValues] = useState<IFormValues>({
         name: '',
         email: '',
         password: ''
     });
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({
             ...formValues,
@@ -24,12 +30,13 @@ function RegisterPage() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!formValues.name || !formValues.email || !formValues.password) {
             setError('Заполните все поля');
             return;
         }
+        // @ts-ignore
         dispatch(registerUser(formValues.email, formValues.password, formValues.name))
             .then(() => {
                 navigate('/login');

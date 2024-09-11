@@ -1,11 +1,35 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, RefObject, useEffect, useState } from "react";
 import { Input, EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './profile.module.css';
 
-function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleBlur, inputRef, handleCancel, handleSave, errors }) {
-    const [isChanging, setIsChanging] = useState(false);
+export interface IFormValues {
+    value1: string;
+    value2: string;
+    value3: string;
+}
 
-    const handleFieldChange = (e) => {
+export interface IErrorsValues {
+    value1?: string;
+    value2?: string;
+    value3?: string;
+}
+
+interface IFormChangeProps {
+    formValues: IFormValues;
+    handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    onIconClick: () => void;
+    isDisabled: boolean;
+    handleBlur: () => void;
+    inputRef: RefObject<HTMLInputElement>;
+    handleCancel: () => void;
+    handleSave: () => void;
+    errors: IErrorsValues;
+}
+
+function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleBlur, inputRef, handleCancel, handleSave, errors }: IFormChangeProps) {
+    const [isChanging, setIsChanging] = useState<boolean>(false);
+
+    const handleFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
         handleChange(e);
         setIsChanging(true);
     };
@@ -52,7 +76,7 @@ function FormChange({ formValues, handleChange, onIconClick, isDisabled, handleB
                     placeholder="Логин"
                     isIcon={true}
                 />
-                {errors.value2 && <p cclassName="text text_type_main-default text_color_error">{errors.value2}</p>}
+                {errors.value2 && <p className="text text_type_main-default text_color_error">{errors.value2}</p>}
             </div>
             <div className={styles.inputGroup}>
                 <PasswordInput

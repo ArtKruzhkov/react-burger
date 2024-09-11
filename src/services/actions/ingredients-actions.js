@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../data/constants";
-import { checkResponse } from "../../data/api";
+// import { checkResponse } from "../../data/api";
+import checkResponse from "../../data/api";
 
 export const FETCH_INGREDIENTS_REQUEST = 'FETCH_INGREDIENTS_REQUEST';
 export const FETCH_INGREDIENTS_SUCCESS = 'FETCH_INGREDIENTS_SUCCESS';

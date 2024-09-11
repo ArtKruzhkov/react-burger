@@ -1,7 +1,7 @@
 import { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed, userUpdated, passwordResetRequestSuccess, passwordResetRequestFailure, passwordResetSuccess, passwordResetFailure } from '../reducers/auth-reducer';
 import { BASE_URL } from '../../data/constants';
 import Cookies from 'js-cookie';
-import { checkResponse } from '../../data/api';
+import checkResponse from '../../data/api';
 
 export const registerUser = (email, password, name) => async (dispatch) => {
     dispatch(authRequest());

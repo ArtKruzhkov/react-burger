@@ -1,28 +1,32 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { NavLink, Route, Routes, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './profile.module.css';
 import FormChange from "./form-change";
 import { logoutUser, fetchUserData, updateUserData } from "../../services/actions/auth-actions";
+import { IFormValues, IErrorsValues } from "./form-change";
+
 
 function ProfilePage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    // @ts-ignore
     const user = useSelector(state => state.auth.user);
 
-    const [formValues, setFormValues] = useState({
+    const [formValues, setFormValues] = useState<IFormValues>({
         value1: user?.name || '',
         value2: user?.email || '',
         value3: ''
     });
 
-    const [originalValues, setOriginalValues] = useState(formValues);
-    const [isDisabled, setIsDisabled] = useState(true);
-    const [errors, setErrors] = useState({});
-    const inputRef = useRef(null);
+    const [originalValues, setOriginalValues] = useState<IFormValues>(formValues);
+    const [isDisabled, setIsDisabled] = useState<boolean>(true);
+    const [errors, setErrors] = useState<IErrorsValues>({});
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!user) {
+            // @ts-ignore
             dispatch(fetchUserData());
         }
     }, [dispatch, user]);
@@ -40,7 +44,7 @@ function ProfilePage() {
         });
     }, [user]);
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({
             ...formValues,
@@ -62,7 +66,7 @@ function ProfilePage() {
     };
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors: IErrorsValues = {};
         if (!formValues.value1) newErrors.value1 = 'Имя обязательно для заполнения';
         if (!formValues.value2) newErrors.value2 = 'Email обязательно для заполнения';
         if (!formValues.value3) newErrors.value3 = 'Пароль обязательно для заполнения';
@@ -72,6 +76,7 @@ function ProfilePage() {
 
     const handleSave = () => {
         if (validateForm()) {
+            // @ts-ignore
             dispatch(updateUserData(formValues.value2, formValues.value1));
             setOriginalValues(formValues);
             setErrors({});

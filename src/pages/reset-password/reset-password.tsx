@@ -1,23 +1,29 @@
 import { PasswordInput, Input, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { resetPassword } from "../../services/actions/auth-actions";
 import styles from './reset-password.module.css';
 
+interface IFormValues {
+    password: string;
+    token: string;
+}
+
 function ResetPasswordPage() {
-    const [formValues, setFormValues] = useState({
+    const [formValues, setFormValues] = useState<IFormValues>({
         password: '',
         token: ''
     });
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const loading = useSelector(state => state.auth.loading);
+    // @ts-ignore
     const passwordResetSuccess = useSelector(state => state.auth.passwordResetSuccess);
+    // @ts-ignore
     const resetRequestSent = useSelector(state => state.auth.passwordResetRequestSent);
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({
             ...formValues,
@@ -25,12 +31,13 @@ function ResetPasswordPage() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!formValues.password || !formValues.token) {
             setError('Заполните все поля');
             return;
         }
+        // @ts-ignore
         dispatch(resetPassword(formValues.password, formValues.token));
         setFormValues({
             password: '',
@@ -70,8 +77,8 @@ function ResetPasswordPage() {
                 />
                 {error && <p className="text text_type_main-default text_color_error">{error}</p>}
                 <div>
-                    <Button htmlType="submit" type="primary" size="large" disabled={loading}>
-                        {loading ? 'Загрузка...' : 'Сохранить'}
+                    <Button htmlType="submit" type="primary" size="large">
+                        Сохранить
                     </Button>
                 </div>
             </form>

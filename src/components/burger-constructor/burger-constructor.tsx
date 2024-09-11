@@ -10,7 +10,29 @@ import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngr
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, otherIngredients }) => {
+interface IIngredient {
+    uniqueId: string;
+    _id: string;
+    name: string;
+    type: string;
+    price: number;
+    image: string;
+}
+
+interface IDraggableIngredientProps {
+    ingredient: IIngredient;
+    index: number;
+    moveIngredient: (fromIndex: number, toIndex: number) => void;
+    handleRemove: (uniqueId: string) => void;
+    otherIngredients: IIngredient[];
+}
+
+interface IDroppableAreaProps {
+    onDrop: (ingredient: IIngredient) => void;
+    children: React.ReactNode;
+}
+
+const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, otherIngredients }: IDraggableIngredientProps) => {
     const [, drag] = useDrag({
         type: ItemTypes.INGREDIENT,
         item: { id: ingredient.uniqueId, index },
@@ -21,7 +43,7 @@ const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, 
 
     const [, drop] = useDrop({
         accept: ItemTypes.INGREDIENT,
-        hover: (item) => {
+        hover: (item: { index: number }) => {
             const isInConstructor = item.index !== undefined && item.index >= 0 && item.index < otherIngredients.length;
 
             if (isInConstructor && item.index !== index) {
@@ -44,10 +66,10 @@ const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, 
     );
 };
 
-const DroppableArea = ({ onDrop, children }) => {
+const DroppableArea = ({ onDrop, children }: IDroppableAreaProps) => {
     const [{ isOver }, drop] = useDrop({
         accept: ItemTypes.INGREDIENT,
-        drop: (item) => onDrop(item),
+        drop: (item: IIngredient) => onDrop(item),
         collect: (monitor) => ({
             isOver: monitor.isOver()
         })
@@ -63,15 +85,17 @@ const DroppableArea = ({ onDrop, children }) => {
 const BurgerConstructor = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    // @ts-ignore
     const selectedIngredients = useSelector(state => state.constructorReducer.ingredients);
+    // @ts-ignore
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const bun = selectedIngredients.find(ingredient => ingredient.type === 'bun');
-    const otherIngredients = selectedIngredients.filter(ingredient => ingredient.type !== 'bun');
+    const bun = selectedIngredients.find((ingredient: IIngredient) => ingredient.type === 'bun');
+    const otherIngredients = selectedIngredients.filter((ingredient: IIngredient) => ingredient.type !== 'bun');
 
     const calculateTotalPrice = () => {
         const bunPrice = bun ? bun.price * 2 : 0;
-        const otherIngredientsPrice = otherIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
+        const otherIngredientsPrice = otherIngredients.reduce((sum: number, ingredient: IIngredient) => sum + ingredient.price, 0);
         return bunPrice + otherIngredientsPrice;
     };
 
@@ -83,13 +107,13 @@ const BurgerConstructor = () => {
             return;
         }
 
-        const ingredientIds = selectedIngredients.map(ingredient => ingredient._id);
+        const ingredientIds = selectedIngredients.map((ingredient: IIngredient) => ingredient._id);
 
         if (ingredientIds.length === 0) {
             alert('Добавьте ингредиенты в конструктор!');
             return;
         }
-
+        // @ts-ignore
         dispatch(createOrder(ingredientIds));
         setIsModalOpen(true);
     };
@@ -98,20 +122,20 @@ const BurgerConstructor = () => {
         setIsModalOpen(false);
     };
 
-    const handleDrop = (ingredient) => {
+    const handleDrop = (ingredient: IIngredient) => {
         dispatch(addIngredientToConstructor(ingredient));
     };
 
-    const handleRemove = (uniqueId) => {
+    const handleRemove = (uniqueId: string) => {
         dispatch(removeIngredientFromConstructor(uniqueId));
     };
 
-    const moveIngredient = (fromIndex, toIndex) => {
+    const moveIngredient = (fromIndex: number, toIndex: number) => {
         const updatedIngredients = [...otherIngredients];
         const [movedIngredient] = updatedIngredients.splice(fromIndex, 1);
         updatedIngredients.splice(toIndex, 0, movedIngredient);
         dispatch(updateIngredientOrder([
-            ...selectedIngredients.filter(ingredient => ingredient.type === 'bun'),
+            ...selectedIngredients.filter((ingredient: IIngredient) => ingredient.type === 'bun'),
             ...updatedIngredients
         ]));
     };
@@ -132,7 +156,7 @@ const BurgerConstructor = () => {
                         </div>
                     )}
 
-                    {otherIngredients.map((ingredient, index) => (
+                    {otherIngredients.map((ingredient: IIngredient, index: number) => (
                         <DraggableIngredient
                             key={ingredient.uniqueId}
                             ingredient={ingredient}

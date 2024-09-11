@@ -1,21 +1,36 @@
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { loginUser } from "../../services/actions/auth-actions";
 import { Link, useNavigate } from "react-router-dom";
 import { EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './login.module.css';
 
+interface IFormValues {
+    email: string;
+    password: string;
+}
+
+interface ILoginResponse {
+    success: boolean;
+    accessToken: string;
+    refreshToken: string;
+    user: {
+        email: string;
+        name: string;
+    };
+}
+
 function LoginPage() {
-    const [formValues, setFormValues] = useState({
+    const [formValues, setFormValues] = useState<IFormValues>({
         email: '',
         password: ''
     });
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({
             ...formValues,
@@ -23,14 +38,15 @@ function LoginPage() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!formValues.email || !formValues.password) {
             setError('Заполните все поля');
             return;
         }
+        // @ts-ignore
         dispatch(loginUser(formValues.email, formValues.password))
-            .then((result) => {
+            .then((result: ILoginResponse) => {
                 if (result.success) {
                     navigate('/');
                 } else {

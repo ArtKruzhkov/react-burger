@@ -3,14 +3,13 @@ import styles from './order-details.module.css';
 import icon from '../../images/order-complete-icon.svg';
 
 function OrderDetails() {
+    // @ts-ignore
     const orderNumber = useSelector(state => state.orderReducer.orderNumber);
-    // const orderName = useSelector(state => state.orderReducer.orderName);
 
     return (
         <div className={styles.orderDetails}>
             {orderNumber ? (
                 <>
-                    {/* <p className="text text_type_main-medium">Ваш заказ: {orderName}</p> */}
                     <p className={`${styles.orderNumber} text text_type_digits-large`}>{orderNumber}</p>
                     <p className="text text_type_main-medium">идентификатор заказа</p>
                     <img className={styles.orderIcon} src={icon} alt='order-complete-icon' />
@@ -25,5 +24,3 @@ function OrderDetails() {
 }
 
 export default OrderDetails;
-
-
