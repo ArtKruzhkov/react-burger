@@ -42,32 +42,6 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }: IDraggabl
     );
 };
 
-// interface IIngredientsListProps {
-//     title: string;
-//     ingredientsList: IIngredient[];
-//     clickedIngredients: Record<string, number>;
-//     innerRef: React.RefObject<HTMLDivElement>;
-//     onIngredientClick: (ingredient: IIngredient) => void;
-// }
-
-// const IngredientsList = ({ title, ingredientsList, clickedIngredients, innerRef, onIngredientClick }: IIngredientsListProps) => {
-//     return (
-//         <div ref={innerRef}>
-//             <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>{title}</h3>
-//             <div className={styles.itemsContainer}>
-//                 {ingredientsList.map(ingredient => (
-//                     <DraggableIngredient
-//                         key={ingredient._id}
-//                         ingredient={ingredient}
-//                         onIngredientClick={onIngredientClick}
-//                         count={clickedIngredients[ingredient._id] || 0}
-//                     />
-//                 ))}
-//             </div>
-//         </div>
-//     );
-// };
-
 function BurgerIngredients() {
     // @ts-ignore
     const ingredients = useSelector(state => state.ingredients.ingredients);
