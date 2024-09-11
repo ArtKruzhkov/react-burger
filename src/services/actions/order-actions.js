@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../data/constants";
-import { checkResponse } from "../../data/api";
+import checkResponse from "../../data/api";
 import { clearConstructor } from "./constructor-actions";
 
 export const SET_ORDER = 'SET_ORDER';

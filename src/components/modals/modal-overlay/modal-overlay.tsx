@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 import styles from './modal-overlay.module.css';
 
-function ModalOverlay({ onClose }) {
+function ModalOverlay({ onClose }: { onClose: () => void }) {
 
-    const handleOverlayClick = (e) => {
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (e.target === e.currentTarget) {
             onClose();
         }
@@ -12,12 +11,8 @@ function ModalOverlay({ onClose }) {
 
     return ReactDOM.createPortal(
         <div className={styles.overlay} onClick={handleOverlayClick} />,
-        document.getElementById('react-modals')
+        document.getElementById('react-modals') as HTMLElement
     );
 }
-
-ModalOverlay.propTypes = {
-    onClose: PropTypes.func.isRequired,
-};
 
 export default ModalOverlay;

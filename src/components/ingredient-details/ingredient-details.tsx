@@ -1,7 +1,15 @@
 import styles from './ingredient-details.module.css';
-import PropTypes from 'prop-types';
 
-function IngredientDetails({ image_large, name, calories, proteins, fat, carbohydrates }) {
+interface IIngredientDetailsProps {
+    image_large: string;
+    name: string;
+    calories: number;
+    proteins: number;
+    fat: number;
+    carbohydrates: number;
+}
+
+function IngredientDetails({ image_large, name, calories, proteins, fat, carbohydrates }: IIngredientDetailsProps) {
     return (
         <div className={styles.ingredientDetailsWrap}>
             <h3 className={`${styles.ingredientDetailsWrapTitle} text text_type_main-large`}>Детали ингредиента</h3>
@@ -29,15 +37,6 @@ function IngredientDetails({ image_large, name, calories, proteins, fat, carbohy
             </div>
         </div>
     );
-}
-
-IngredientDetails.propTypes = {
-    image_large: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    calories: PropTypes.number.isRequired,
-    proteins: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    carbohydrates: PropTypes.number.isRequired
 }
 
 export default IngredientDetails;

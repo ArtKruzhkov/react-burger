@@ -3,15 +3,22 @@ import { useLocation, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData } from '../../services/actions/auth-actions';
 
-export default function ProtectedRoute({ children, anonymous = false }) {
+interface IProtectedRouteProps {
+    anonymous?: boolean;
+    children: React.ReactNode;
+}
+
+export default function ProtectedRoute({ children, anonymous = false }: IProtectedRouteProps) {
     const dispatch = useDispatch();
+    // @ts-ignore
     const isLoggedIn = useSelector((store) => store.auth.isAuthenticated);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const location = useLocation();
     const from = location.state?.from || '/';
 
     useEffect(() => {
         if (!isLoggedIn) {
+            // @ts-ignore
             dispatch(fetchUserData()).finally(() => setIsLoading(false));
         } else {
             setIsLoading(false);
@@ -30,5 +37,5 @@ export default function ProtectedRoute({ children, anonymous = false }) {
         return <Navigate to="/login" state={{ from: location }} />;
     }
 
-    return children;
+    return <>{children}</>;
 }

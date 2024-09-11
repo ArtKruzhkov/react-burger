@@ -4,10 +4,9 @@ import IngredientDetails from "../../components/ingredient-details/ingredient-de
 import styles from './ingredient-info.module.css';
 
 function IngredientInfoFullPage() {
-    const { id } = useParams();
-    const ingredient = useSelector(state =>
-        state.ingredients.ingredients.find(ingredient => ingredient._id === id)
-    );
+    const { id } = useParams<string>();
+    // @ts-ignore
+    const ingredient = useSelector(state => state.ingredients.ingredients.find(ingredient => ingredient._id === id));
 
     return (
         <div className={styles.ingredientInfoContainer}>

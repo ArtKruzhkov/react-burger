@@ -1,13 +1,26 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import { ItemTypes } from '../../data/constants';
 import { useDrag } from 'react-dnd';
 import styles from './burger-ingredients.module.css';
-import PropTypes from 'prop-types';
 
-const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
+interface IIngredient {
+    _id: string;
+    name: string;
+    type: string;
+    price: number;
+    image: string;
+}
+
+interface IDraggableIngredientProps {
+    ingredient: IIngredient;
+    onIngredientClick: (ingredient: IIngredient) => void;
+    count: number;
+}
+
+const DraggableIngredient = ({ ingredient, onIngredientClick, count }: IDraggableIngredientProps) => {
     const [, drag] = useDrag({
         type: ItemTypes.INGREDIENT,
         item: ingredient,
@@ -21,7 +34,7 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
         >
             <img src={ingredient.image} alt={ingredient.name} />
             <p className={`${styles.itemPrice} text text_type_digits-default`}>
-                {ingredient.price}<CurrencyIcon />
+                {ingredient.price}<CurrencyIcon type='primary' />
             </p>
             <p className="text text_type_main-default">{ingredient.name}</p>
             {count > 0 && <Counter count={count} size="default" />}
@@ -29,52 +42,48 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }) => {
     );
 };
 
-DraggableIngredient.propTypes = {
-    ingredient: PropTypes.object.isRequired,
-    onIngredientClick: PropTypes.func.isRequired,
-    count: PropTypes.number.isRequired
-};
+// interface IIngredientsListProps {
+//     title: string;
+//     ingredientsList: IIngredient[];
+//     clickedIngredients: Record<string, number>;
+//     innerRef: React.RefObject<HTMLDivElement>;
+//     onIngredientClick: (ingredient: IIngredient) => void;
+// }
 
-const IngredientsList = ({ title, ingredientsList, clickedIngredients, innerRef, onIngredientClick }) => {
-    return (
-        <div ref={innerRef}>
-            <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>{title}</h3>
-            <div className={styles.itemsContainer}>
-                {ingredientsList.map(ingredient => (
-                    <DraggableIngredient
-                        key={ingredient._id}
-                        ingredient={ingredient}
-                        onIngredientClick={onIngredientClick}
-                        count={clickedIngredients[ingredient._id] || 0}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-IngredientsList.propTypes = {
-    title: PropTypes.string.isRequired,
-    ingredientsList: PropTypes.arrayOf(PropTypes.object).isRequired,
-    clickedIngredients: PropTypes.object.isRequired,
-    innerRef: PropTypes.object,
-    onIngredientClick: PropTypes.func.isRequired,
-};
+// const IngredientsList = ({ title, ingredientsList, clickedIngredients, innerRef, onIngredientClick }: IIngredientsListProps) => {
+//     return (
+//         <div ref={innerRef}>
+//             <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>{title}</h3>
+//             <div className={styles.itemsContainer}>
+//                 {ingredientsList.map(ingredient => (
+//                     <DraggableIngredient
+//                         key={ingredient._id}
+//                         ingredient={ingredient}
+//                         onIngredientClick={onIngredientClick}
+//                         count={clickedIngredients[ingredient._id] || 0}
+//                     />
+//                 ))}
+//             </div>
+//         </div>
+//     );
+// };
 
 function BurgerIngredients() {
+    // @ts-ignore
     const ingredients = useSelector(state => state.ingredients.ingredients);
+    // @ts-ignore
     const clickedIngredients = useSelector(state => state.constructorReducer.ingredientCounts);
-    const [current, setCurrent] = useState('bun');
+    const [current, setCurrent] = useState<string>('bun');
     const navigate = useNavigate();
 
-    const bunsRef = useRef(null);
-    const saucesRef = useRef(null);
-    const mainsRef = useRef(null);
-    const containerRef = useRef(null);
+    const bunsRef = useRef<HTMLDivElement>(null);
+    const saucesRef = useRef<HTMLDivElement>(null);
+    const mainsRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const buns = ingredients.filter(ingredient => ingredient.type === 'bun');
-    const mains = ingredients.filter(ingredient => ingredient.type === 'main');
-    const sauces = ingredients.filter(ingredient => ingredient.type === 'sauce');
+    const buns = ingredients.filter((ingredient: IIngredient) => ingredient.type === 'bun');
+    const mains = ingredients.filter((ingredient: IIngredient) => ingredient.type === 'main');
+    const sauces = ingredients.filter((ingredient: IIngredient) => ingredient.type === 'sauce');
 
     useEffect(() => {
         const container = containerRef.current;
@@ -100,18 +109,25 @@ function BurgerIngredients() {
             }
         };
 
-        container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
     }, []);
 
-    const handleIngredientClick = (ingredient) => {
+    const handleIngredientClick = (ingredient: IIngredient) => {
         navigate(`/ingredients/${ingredient._id}`, { state: { backgroundLocation: location.pathname, ingredient } });
     };
 
-    const handleTabClick = (tab) => {
+    const handleTabClick = (tab: string) => {
         setCurrent(tab);
         const tabRef = tab === 'bun' ? bunsRef : tab === 'sauce' ? saucesRef : mainsRef;
-        tabRef.current.scrollIntoView({ behavior: 'smooth' });
+        tabRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     return (
@@ -134,7 +150,7 @@ function BurgerIngredients() {
                 <div ref={bunsRef}>
                     <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Булки</h3>
                     <div className={styles.itemsContainer}>
-                        {buns.map(ingredient => (
+                        {buns.map((ingredient: IIngredient) => (
                             <DraggableIngredient
                                 key={ingredient._id}
                                 ingredient={ingredient}
@@ -147,7 +163,7 @@ function BurgerIngredients() {
                 <div ref={saucesRef}>
                     <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Соусы</h3>
                     <div className={styles.itemsContainer}>
-                        {sauces.map(ingredient => (
+                        {sauces.map((ingredient: IIngredient) => (
                             <DraggableIngredient
                                 key={ingredient._id}
                                 ingredient={ingredient}
@@ -160,7 +176,7 @@ function BurgerIngredients() {
                 <div ref={mainsRef}>
                     <h3 className={`${styles.itemsContainerHeader} text text_type_main-medium`}>Начинки</h3>
                     <div className={styles.itemsContainer}>
-                        {mains.map(ingredient => (
+                        {mains.map((ingredient: IIngredient) => (
                             <DraggableIngredient
                                 key={ingredient._id}
                                 ingredient={ingredient}

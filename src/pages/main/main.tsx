@@ -6,6 +6,7 @@ import BurgerIngredients from '../../components/burger-ingredients/burger-ingred
 import BurgerConstructor from '../../components/burger-constructor/burger-constructor';
 
 function MainPage() {
+    // @ts-ignore
     const { ingredients, loading, error } = useSelector(state => state.ingredients);
 
     return (
