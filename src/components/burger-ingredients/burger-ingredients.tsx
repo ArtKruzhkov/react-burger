@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -46,7 +46,7 @@ function BurgerIngredients() {
     // @ts-ignore
     const ingredients = useSelector(state => state.ingredients.ingredients);
     // @ts-ignore
-    const clickedIngredients = useSelector(state => state.constructorReducer.ingredientCounts);
+    const clickedIngredients = useSelector(state => state.constructorRed.ingredientCounts);
     const [current, setCurrent] = useState<string>('bun');
     const navigate = useNavigate();
 
@@ -61,7 +61,6 @@ function BurgerIngredients() {
 
     useEffect(() => {
         const container = containerRef.current;
-
         const handleScroll = () => {
             if (bunsRef.current && saucesRef.current && mainsRef.current && container) {
                 const bunsTop = bunsRef.current.getBoundingClientRect().top;

@@ -4,7 +4,7 @@ import icon from '../../images/order-complete-icon.svg';
 
 function OrderDetails() {
     // @ts-ignore
-    const orderNumber = useSelector(state => state.orderReducer.orderNumber);
+    const orderNumber = useSelector(state => state.order.orderNumber);
 
     return (
         <div className={styles.orderDetails}>

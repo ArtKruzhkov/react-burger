@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { NavLink, Route, Routes, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch } from "../../services/types";
 import styles from './profile.module.css';
 import FormChange from "./form-change";
 import { logoutUser, fetchUserData, updateUserData } from "../../services/actions/auth-actions";
@@ -8,7 +9,7 @@ import { IFormValues, IErrorsValues } from "./form-change";
 
 
 function ProfilePage() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     // @ts-ignore
     const user = useSelector(state => state.auth.user);
@@ -84,7 +85,7 @@ function ProfilePage() {
     };
 
     const handleLogout = async () => {
-        await logoutUser(dispatch);
+        dispatch(logoutUser());
         navigate('/login');
     };
 

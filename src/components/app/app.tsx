@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../services/types';
 import { useEffect } from 'react';
 import styles from './app.module.css';
 import AppHeader from '../app-header/app-header';
@@ -16,7 +16,7 @@ import Modal from '../modals/modal/modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 
 function App() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -24,7 +24,6 @@ function App() {
     const backgroundLocation = state.backgroundLocation || location;
 
     useEffect(() => {
-        // @ts-ignore
         dispatch(fetchIngredients());
     }, [dispatch]);
 

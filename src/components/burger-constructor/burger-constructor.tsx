@@ -6,7 +6,7 @@ import styles from './burger-constructor.module.css';
 import Modal from '../modals/modal/modal';
 import OrderDetails from '../order-details/order-details';
 import { createOrder } from '../../services/actions/order-actions';
-import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/actions/constructor-actions';
+import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/reducers/constructor-slice';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -87,7 +87,7 @@ const BurgerConstructor = () => {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     // @ts-ignore
-    const selectedIngredients = useSelector(state => state.constructorReducer.ingredients);
+    const selectedIngredients = useSelector(state => state.constructorRed.ingredients);
     // @ts-ignore
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
     const bun = selectedIngredients.find((ingredient: IIngredient) => ingredient.type === 'bun');
