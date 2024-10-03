@@ -32,7 +32,7 @@ function OrderItem({ order, onClick }: IOrderItemProps) {
         return ingredient ? total + ingredient.price : total;
     }, 0);
 
-    const statusStyleCompleted = orderStatus === 'done' ? styles.orderStatusComplete : '';
+    const statusStyle = orderStatus === 'done' ? styles.orderStatusComplete : styles.orderStatusCanceled;
 
     let bunShown = false;
 
@@ -46,8 +46,10 @@ function OrderItem({ order, onClick }: IOrderItemProps) {
                 {orderName}
             </h3>
             {isProfileOrdersPage && (
-                <p className={`${styles.orderStatus} text text_type_main-default ${statusStyleCompleted}`}>
-                    {order.status === 'done' ? 'Выполнен' : 'Готовится'}
+                <p className={`${styles.orderStatus} text text_type_main-default ${statusStyle}`}>
+                    {order.status === 'done'
+                        ? 'Выполнен'
+                        : order.status === 'canceled' ? 'Отменен' : 'Готовится'}
                 </p>
             )}
             <div className={styles.ingredientsAndPriceWrapper}>

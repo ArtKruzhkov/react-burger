@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import OrderList from '../../components/order-list/order-list';
 import OrderInfoFullPage from '../order-info-full-page/order-info-full-page';
 import { useAppDispatch, useAppSelector } from '../../services/types';
-import { wsConnectionStart } from '../../services/reducers/orders-reducer';
+import { wsConnectionStart, wsConnectionClosed } from '../../services/reducers/orders-reducer';
 import styles from './feed-page.module.css';
 
 const FeedPage = () => {
@@ -19,7 +19,9 @@ const FeedPage = () => {
 
     useEffect(() => {
         dispatch(wsConnectionStart('wss://norma.nomoreparties.space/orders/all'));
+
         return () => {
+            dispatch(wsConnectionClosed());
         };
     }, [dispatch]);
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../services/types';
 import { wsConnectionStart, wsConnectionClosed } from '../../services/reducers/orders-reducer';
 import OrderList from '../../components/order-list/order-list';
 import OrderInfoFullPage from '../order-info-full-page/order-info-full-page';
@@ -11,7 +11,7 @@ import styles from './profile-order.module.css';
 const ProfileOrdersPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const accessToken = localStorage.getItem('accessToken')?.split(' ')[1];
 

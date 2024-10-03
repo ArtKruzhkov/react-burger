@@ -16,6 +16,14 @@ interface IOrder {
     updatedAt: string;
 }
 
+interface IIngredient {
+    _id: string;
+    name: string;
+    type: string;
+    price: number;
+    image_mobile: string;
+}
+
 const OrderInfo = () => {
     const { number } = useParams<{ number: string }>();
     const [order, setOrder] = useState<IOrder | null>(null);
@@ -56,33 +64,46 @@ const OrderInfo = () => {
         return <p>Заказ не найден</p>;
     }
 
-    const totalPrice = order.ingredients.reduce((total, ingredientId) => {
+    const ingredientCount: { [id: string]: { ingredient: IIngredient, count: number } } = {};
+
+    order.ingredients.forEach((ingredientId) => {
         const ingredient = ingredients.find(ing => ing._id === ingredientId);
-        return ingredient ? total + ingredient.price : total;
+        if (ingredient) {
+            if (ingredientCount[ingredient._id]) {
+                ingredientCount[ingredient._id].count += 1;
+            } else {
+                ingredientCount[ingredient._id] = { ingredient, count: 1 };
+            }
+        }
+    });
+
+    const totalPrice = Object.values(ingredientCount).reduce((total, { ingredient, count }) => {
+        return total + ingredient.price * count;
     }, 0);
+
+    const statusStyle = order.status === 'done' ? styles.orderStatusComplete : styles.orderStatusCanceled;
 
     return (
         <div className={styles.orderContainerWrapper}>
             <div className={styles.orderContainer}>
                 <p className="text text_type_digits-default">#{order.number}</p>
                 <h2 className={`${styles.orderName} text text_type_main-medium`}>{order.name}</h2>
-                <p className={`${order.status === 'done' ? styles.orderStatusComplete : styles.orderStatusInProgress} text text_type_main-default`}>
-                    {order.status === 'done' ? 'Выполнен' : 'Готовится'}
+                <p className={`${styles.orderStatus} text text_type_main-default ${statusStyle}`}>
+                    {order.status === 'done'
+                        ? 'Выполнен'
+                        : order.status === 'canceled' ? 'Отменен' : 'Готовится'}
                 </p>
                 <h3 className={`${styles.compoundHeader} text text_type_main-medium`}>Состав:</h3>
                 <div className={styles.compoundContainer}>
-                    {order.ingredients.map((ingredientId, index) => {
-                        const ingredient = ingredients.find(ing => ing._id === ingredientId);
-                        return ingredient ? (
-                            <div key={index} className={styles.ingredientContainer}>
-                                <img src={ingredient.image_mobile} alt={ingredient.name} className={styles.ingredientImage} />
-                                <p className={`${styles.ingredientName} text text_type_main-default`}>{ingredient.name}</p>
-                                <p className={`${styles.ingredientPrice} text text_type_main-default`}>
-                                    1 x {ingredient.price}<CurrencyIcon type="primary" />
-                                </p>
-                            </div>
-                        ) : null;
-                    })}
+                    {Object.values(ingredientCount).map(({ ingredient, count }, index) => (
+                        <div key={index} className={styles.ingredientContainer}>
+                            <img src={ingredient.image_mobile} alt={ingredient.name} className={styles.ingredientImage} />
+                            <p className={`${styles.ingredientName} text text_type_main-default`}>{ingredient.name}</p>
+                            <p className={`${styles.ingredientPrice} text text_type_main-default`}>
+                                {count} x {ingredient.price}<CurrencyIcon type="primary" />
+                            </p>
+                        </div>
+                    ))}
                 </div>
                 <div className={styles.orderPriceContainer}>
                     <FormattedDate date={new Date(order.createdAt)} className='text text_type_main-default text_color_inactive' />
