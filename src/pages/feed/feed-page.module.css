@@ -1,0 +1,66 @@
+.mainHeader {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.ordersContainer {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-top: 45px;
+}
+
+.scrollContainer {
+    max-height: 722px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: #8585AD #2F2F37;
+    padding-right: 8px;
+}
+
+.orderStatsWrapper {
+    width: 100%;
+    display: flex;
+    gap: 36px;
+    margin-bottom: 60px;
+    margin-top: 65px;
+}
+
+.orderStatsContainer {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.completedOrdersContainer {
+    display: flex;
+    gap: 12px;
+}
+
+.orderStatus {
+    margin-bottom: 24px;
+}
+
+.orderNumberReady {
+    margin-bottom: 8px;
+    color: #00CCCC;
+}
+
+.orderNumberInProgress {
+    margin-bottom: 8px;
+}
+
+.statsInfoWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.statsInfoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.statsNumber {
+    text-shadow: 0 0 8px rgba(104, 104, 255, 0.8), 0 0 20px rgb(57 67 255 / 50%);
+}

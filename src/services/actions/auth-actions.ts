@@ -189,15 +189,15 @@ export const fetchUserData = () => async (dispatch: AppDispatch) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `${accessToken}`
             }
         });
         const data = await checkResponse(response);
         if (data.success) {
             dispatch(authSuccess({
                 user: data.user,
-                accessToken: accessToken || '',
-                refreshToken: Cookies.get('refreshToken') || ''
+                accessToken: accessToken,
+                refreshToken: Cookies.get('refreshToken')
             }));
         } else {
             dispatch(authFailure('Failed to fetch user data'));

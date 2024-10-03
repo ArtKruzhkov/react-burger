@@ -1,10 +1,9 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../services/types';
 import styles from './order-details.module.css';
 import icon from '../../images/order-complete-icon.svg';
 
 function OrderDetails() {
-    // @ts-ignore
-    const orderNumber = useSelector(state => state.order.orderNumber);
+    const orderNumber = useAppSelector(state => state.order.orderNumber);
 
     return (
         <div className={styles.orderDetails}>

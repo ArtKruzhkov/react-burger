@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../services/types';
 import { useNavigate } from 'react-router-dom';
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import { ItemTypes } from '../../data/constants';
@@ -43,10 +43,8 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }: IDraggabl
 };
 
 function BurgerIngredients() {
-    // @ts-ignore
-    const ingredients = useSelector(state => state.ingredients.ingredients);
-    // @ts-ignore
-    const clickedIngredients = useSelector(state => state.constructorRed.ingredientCounts);
+    const ingredients = useAppSelector(state => state.ingredients.ingredients);
+    const clickedIngredients = useAppSelector(state => state.constructorRed.ingredientCounts);
     const [current, setCurrent] = useState<string>('bun');
     const navigate = useNavigate();
 

@@ -4,14 +4,17 @@ import { setOrder, clearOrder } from "../reducers/order-reducer-slice";
 import { clearConstructor } from "../reducers/constructor-slice";
 import { AppDispatch } from "../types";
 
-export const createOrder = (ingredients: any[]) => async (dispatch: AppDispatch) => {
+export const createOrder = (ingredients: string[]) => async (dispatch: AppDispatch) => {
     dispatch(clearOrder());
+
+    const accessToken = localStorage.getItem('accessToken');
 
     try {
         const response = await fetch(`${BASE_URL}/orders`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `${accessToken}`
             },
             body: JSON.stringify({ ingredients })
         });

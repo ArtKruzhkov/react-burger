@@ -3,9 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface Ingredient {
     _id: string;
-    type: string; // Пример типов, можно уточнить
+    name: string;
+    type: string;
+    price: number;
+    image: string;
     [key: string]: any;
-    uniqueId?: string;
+    uniqueId: string;
 }
 
 interface ConstructorState {

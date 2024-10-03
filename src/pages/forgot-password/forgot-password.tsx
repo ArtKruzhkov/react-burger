@@ -1,6 +1,6 @@
 import { EmailInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from "../../services/types";
 import { requestPasswordReset } from "../../services/actions/auth-actions";
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './forgot-password.module.css';
@@ -8,10 +8,9 @@ import styles from './forgot-password.module.css';
 function ForgotPasswordPage() {
     const [email, setEmail] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    // @ts-ignore
-    const passwordResetRequestSent = useSelector(state => state.auth.passwordResetRequestSent);
+    const passwordResetRequestSent = useAppSelector(state => state.auth.passwordResetRequestSent);
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -23,7 +22,6 @@ function ForgotPasswordPage() {
             setError('Заполните все поля');
             return;
         }
-        // @ts-ignore
         dispatch(requestPasswordReset(email));
     };
 

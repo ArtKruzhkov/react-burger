@@ -1,9 +1,17 @@
-// ingredientsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Ingredient {
     _id: string;
-    type: 'bun' | 'sauce' | 'main';
+    name: string;
+    type: string;
+    price: number;
+    image: string;
+    image_large: string;
+    image_mobile: string;
+    calories: number;
+    proteins: number;
+    fat: number;
+    carbohydrates: number;
     [key: string]: any;
     uniqueId?: string;
 }

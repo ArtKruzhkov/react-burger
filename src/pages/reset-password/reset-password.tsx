@@ -1,7 +1,7 @@
 import { PasswordInput, Input, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from "../../services/types";
 import { resetPassword } from "../../services/actions/auth-actions";
 import styles from './reset-password.module.css';
 
@@ -16,12 +16,10 @@ function ResetPasswordPage() {
         token: ''
     });
     const [error, setError] = useState<string | null>(null);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    // @ts-ignore
-    const passwordResetSuccess = useSelector(state => state.auth.passwordResetSuccess);
-    // @ts-ignore
-    const resetRequestSent = useSelector(state => state.auth.passwordResetRequestSent);
+    const passwordResetSuccess = useAppSelector(state => state.auth.passwordResetSuccess);
+    const resetRequestSent = useAppSelector(state => state.auth.passwordResetRequestSent);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -37,7 +35,6 @@ function ResetPasswordPage() {
             setError('Заполните все поля');
             return;
         }
-        // @ts-ignore
         dispatch(resetPassword(formValues.password, formValues.token));
         setFormValues({
             password: '',

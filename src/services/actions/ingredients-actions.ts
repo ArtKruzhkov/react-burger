@@ -3,7 +3,7 @@ import { BASE_URL } from "../../data/constants";
 import { AppDispatch, AppThunk } from "../types";
 import { fetchIngredientsRequest, fetchIngredientsSuccess, fetchIngredientsFailure } from "../reducers/ingredients-slice";
 
-export const fetchIngredients = () => async (dispatch: AppDispatch) => {
+export const fetchIngredients = (): AppThunk => async (dispatch: AppDispatch) => {
     dispatch(fetchIngredientsRequest());
     try {
         const response = await fetch(`${BASE_URL}/ingredients`);

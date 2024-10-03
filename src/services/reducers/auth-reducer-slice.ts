@@ -36,7 +36,7 @@ const authSlice = createSlice({
             state.loading = true;
             state.error = null;
         },
-        authSuccess: (state, action: PayloadAction<{ user: User; accessToken: string; refreshToken: string }>) => {
+        authSuccess: (state, action) => {
             state.user = action.payload.user;
             state.accessToken = action.payload.accessToken;
             state.refreshToken = action.payload.refreshToken;
@@ -45,11 +45,11 @@ const authSlice = createSlice({
             Cookies.set('refreshToken', action.payload.refreshToken, { expires: 7 });
             localStorage.setItem('accessToken', action.payload.accessToken);
         },
-        registerSuccess: (state, action: PayloadAction<{ user: User }>) => {
+        registerSuccess: (state, action) => {
             state.user = action.payload.user;
             state.loading = false;
         },
-        authFailure: (state, action: PayloadAction<string>) => {
+        authFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
@@ -61,17 +61,17 @@ const authSlice = createSlice({
             Cookies.remove('refreshToken');
             localStorage.removeItem('accessToken');
         },
-        tokenRefreshed: (state, action: PayloadAction<{ accessToken: string }>) => {
+        tokenRefreshed: (state, action) => {
             state.accessToken = action.payload.accessToken;
         },
-        userUpdated: (state, action: PayloadAction<{ user: User }>) => {
+        userUpdated: (state, action) => {
             state.user = action.payload.user;
         },
         passwordResetRequestSuccess: (state) => {
             state.passwordResetRequestSent = true;
             state.loading = false;
         },
-        passwordResetRequestFailure: (state, action: PayloadAction<string>) => {
+        passwordResetRequestFailure: (state, action) => {
             state.passwordResetRequestSent = false;
             state.error = action.payload;
             state.loading = false;
@@ -80,19 +80,19 @@ const authSlice = createSlice({
             state.passwordResetSuccess = true;
             state.loading = false;
         },
-        passwordResetFailure: (state, action: PayloadAction<string>) => {
+        passwordResetFailure: (state, action) => {
             state.passwordResetSuccess = false;
             state.error = action.payload;
             state.loading = false;
         },
-    },
+    }
 });
 
 export const {
     authRequest,
     authSuccess,
-    registerSuccess,
     authFailure,
+    registerSuccess,
     logoutSuccess,
     tokenRefreshed,
     userUpdated,

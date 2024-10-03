@@ -1,6 +1,6 @@
 import { Input, EmailInput, PasswordInput, Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from "../../services/types";
 import { registerUser } from "../../services/actions/auth-actions";
 import { Link, useNavigate } from "react-router-dom";
 import styles from './register.module.css';
@@ -19,7 +19,7 @@ function RegisterPage() {
     });
     const [error, setError] = useState<string | null>(null);
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +36,6 @@ function RegisterPage() {
             setError('Заполните все поля');
             return;
         }
-        // @ts-ignore
         dispatch(registerUser(formValues.email, formValues.password, formValues.name))
             .then(() => {
                 navigate('/login');
