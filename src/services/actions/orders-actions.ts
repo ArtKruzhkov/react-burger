@@ -6,7 +6,7 @@ interface TWsActions {
     wsClose: () => TApplicationActions;
     onOpen: () => TApplicationActions;
     onClose: () => TApplicationActions;
-    onError: (event: Event) => TApplicationActions;
+    onError: (event: string) => TApplicationActions;
     onMessage: (data: any) => TApplicationActions;
 }
 
@@ -29,7 +29,7 @@ export const socketMiddleware = (wsActions: TWsActions): Middleware => {
                 };
 
                 socket.onerror = (event: Event) => {
-                    dispatch(wsActions.onError(event));
+                    dispatch(wsActions.onError(event.type));
                 };
 
                 socket.onmessage = (event: MessageEvent) => {
@@ -37,18 +37,18 @@ export const socketMiddleware = (wsActions: TWsActions): Middleware => {
                     const parsedData = JSON.parse(data);
 
                     if (parsedData.message === 'Invalid or missing token') {
-                        dispatch(wsActions.onError(event));
-                        dispatch(wsActions.onClose());
+                        dispatch(wsActions.onError(event.type));
                         socket?.close();
                         window.location.href = '/login';
                     } else {
                         dispatch(wsActions.onMessage(parsedData));
                     }
                 };
+            }
 
-                socket.onclose = () => {
-                    dispatch(wsActions.onClose());
-                };
+            if (type === wsActions.wsClose().type) {
+                socket?.close();
+                socket = null;
             }
 
             next(action);

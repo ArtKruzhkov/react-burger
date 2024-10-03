@@ -15,7 +15,7 @@ interface OrdersState {
     total: number;
     totalToday: number;
     wsConnected: boolean;
-    error?: Event;
+    error?: string;
 }
 
 
@@ -36,7 +36,7 @@ const ordersSlice = createSlice({
         wsConnectionSuccess: (state) => {
             state.wsConnected = true;
         },
-        wsConnectionError: (state, action: PayloadAction<Event>) => {
+        wsConnectionError: (state, action: PayloadAction<string>) => {
             state.wsConnected = false;
             state.error = action.payload;
         },
