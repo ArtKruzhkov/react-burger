@@ -1,34 +1,27 @@
 import { BASE_URL } from "../../data/constants";
 import checkResponse from "../../data/api";
-import { clearConstructor } from "./constructor-actions";
+import { setOrder, clearOrder } from "../reducers/order-reducer-slice";
+import { clearConstructor } from "../reducers/constructor-slice";
+import { AppDispatch } from "../types";
 
-export const SET_ORDER = 'SET_ORDER';
-export const CLEAR_ORDER = 'CLEAR_ORDER';
+export const createOrder = (ingredients: string[]) => async (dispatch: AppDispatch) => {
+    dispatch(clearOrder());
 
-export const setOrder = (orderNumber, orderName) => ({
-    type: SET_ORDER,
-    payload: { orderNumber, orderName }
-});
+    const accessToken = localStorage.getItem('accessToken');
 
-export const clearOrder = () => ({
-    type: CLEAR_ORDER
-});
-
-export const createOrder = (ingredients) => async (dispatch) => {
     try {
-        dispatch(clearOrder());
-
         const response = await fetch(`${BASE_URL}/orders`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `${accessToken}`
             },
             body: JSON.stringify({ ingredients })
         });
 
         const data = await checkResponse(response);
         if (data.success) {
-            dispatch(setOrder(data.order.number, data.name));
+            dispatch(setOrder({ orderNumber: data.order.number, orderName: data.name }));
             dispatch(clearConstructor());
         } else {
             throw new Error('Ошибка при создании заказа');

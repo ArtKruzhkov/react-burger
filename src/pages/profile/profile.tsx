@@ -1,17 +1,16 @@
 import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { NavLink, Route, Routes, useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from "../../services/types";
 import styles from './profile.module.css';
 import FormChange from "./form-change";
 import { logoutUser, fetchUserData, updateUserData } from "../../services/actions/auth-actions";
 import { IFormValues, IErrorsValues } from "./form-change";
-
+import ProfileOrdersPage from "../profile-order/profile-orders";
 
 function ProfilePage() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    // @ts-ignore
-    const user = useSelector(state => state.auth.user);
+    const user = useAppSelector(state => state.auth.user);
 
     const [formValues, setFormValues] = useState<IFormValues>({
         value1: user?.name || '',
@@ -26,7 +25,6 @@ function ProfilePage() {
 
     useEffect(() => {
         if (!user) {
-            // @ts-ignore
             dispatch(fetchUserData());
         }
     }, [dispatch, user]);
@@ -76,7 +74,6 @@ function ProfilePage() {
 
     const handleSave = () => {
         if (validateForm()) {
-            // @ts-ignore
             dispatch(updateUserData(formValues.value2, formValues.value1));
             setOriginalValues(formValues);
             setErrors({});
@@ -84,7 +81,7 @@ function ProfilePage() {
     };
 
     const handleLogout = async () => {
-        await logoutUser(dispatch);
+        dispatch(logoutUser());
         navigate('/login');
     };
 
@@ -143,10 +140,7 @@ function ProfilePage() {
                             />
                         }
                     />
-                    <Route
-                        path="orders"
-                        element={<p className="text text_type_main-large">История заказов</p>}
-                    />
+                    <Route path="/orders/*" element={<ProfileOrdersPage />} />
                 </Routes>
             </div>
         </main>
@@ -154,3 +148,4 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+

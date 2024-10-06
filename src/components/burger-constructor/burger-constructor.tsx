@@ -1,12 +1,12 @@
 import { useDrop, useDrag } from 'react-dnd';
 import { ItemTypes } from '../../data/constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/types';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
 import Modal from '../modals/modal/modal';
 import OrderDetails from '../order-details/order-details';
 import { createOrder } from '../../services/actions/order-actions';
-import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/actions/constructor-actions';
+import { addIngredientToConstructor, removeIngredientFromConstructor, updateIngredientOrder } from '../../services/reducers/constructor-slice';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -83,13 +83,11 @@ const DroppableArea = ({ onDrop, children }: IDroppableAreaProps) => {
 };
 
 const BurgerConstructor = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    // @ts-ignore
-    const selectedIngredients = useSelector(state => state.constructorReducer.ingredients);
-    // @ts-ignore
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const selectedIngredients = useAppSelector(state => state.constructorRed.ingredients);
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const bun = selectedIngredients.find((ingredient: IIngredient) => ingredient.type === 'bun');
     const otherIngredients = selectedIngredients.filter((ingredient: IIngredient) => ingredient.type !== 'bun');
 
@@ -107,16 +105,27 @@ const BurgerConstructor = () => {
             return;
         }
 
-        const ingredientIds = selectedIngredients.map((ingredient: IIngredient) => ingredient._id);
+        const bun = selectedIngredients.find((ingredient: IIngredient) => ingredient.type === 'bun');
+        const otherIngredientIds = selectedIngredients
+            .filter((ingredient: IIngredient) => ingredient.type !== 'bun')
+            .map((ingredient: IIngredient) => ingredient._id);
+
+        let ingredientIds: string[];
+        if (bun) {
+            ingredientIds = [bun._id, ...otherIngredientIds, bun._id];
+        } else {
+            ingredientIds = otherIngredientIds;
+        }
 
         if (ingredientIds.length === 0) {
             alert('Добавьте ингредиенты в конструктор!');
             return;
         }
-        // @ts-ignore
+
         dispatch(createOrder(ingredientIds));
         setIsModalOpen(true);
     };
+
 
     const closeModal = () => {
         setIsModalOpen(false);

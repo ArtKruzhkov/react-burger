@@ -1,7 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
-const initialState = {
+interface User {
+    email: string;
+    name: string;
+}
+
+interface AuthState {
+    user: User | null;
+    accessToken: string | null;
+    refreshToken: string | null;
+    isAuthenticated: boolean;
+    loading: boolean;
+    error: string | null;
+    passwordResetSuccess: boolean;
+    passwordResetRequestSent: boolean;
+}
+
+const initialState: AuthState = {
     user: null,
     accessToken: null,
     refreshToken: null,
@@ -76,6 +92,7 @@ export const {
     authRequest,
     authSuccess,
     authFailure,
+    registerSuccess,
     logoutSuccess,
     tokenRefreshed,
     userUpdated,
@@ -84,5 +101,18 @@ export const {
     passwordResetSuccess,
     passwordResetFailure,
 } = authSlice.actions;
+
+export type IAuthActions =
+    | ReturnType<typeof authRequest>
+    | ReturnType<typeof authSuccess>
+    | ReturnType<typeof registerSuccess>
+    | ReturnType<typeof authFailure>
+    | ReturnType<typeof logoutSuccess>
+    | ReturnType<typeof tokenRefreshed>
+    | ReturnType<typeof userUpdated>
+    | ReturnType<typeof passwordResetRequestSuccess>
+    | ReturnType<typeof passwordResetRequestFailure>
+    | ReturnType<typeof passwordResetSuccess>
+    | ReturnType<typeof passwordResetFailure>;
 
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../services/types';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import styles from './main.module.css';
@@ -6,8 +6,7 @@ import BurgerIngredients from '../../components/burger-ingredients/burger-ingred
 import BurgerConstructor from '../../components/burger-constructor/burger-constructor';
 
 function MainPage() {
-    // @ts-ignore
-    const { ingredients, loading, error } = useSelector(state => state.ingredients);
+    const { ingredients, loading, error } = useAppSelector(state => state.ingredients);
 
     return (
         <DndProvider backend={HTML5Backend}>

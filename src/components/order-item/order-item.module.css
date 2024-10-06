@@ -1,0 +1,80 @@
+.orderContainer {
+    background-color: #1c1c21;
+    padding: 24px;
+    width: 584px;
+    border-radius: 40px;
+}
+
+.orderNumberContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.orderName {
+    text-align: left;
+    margin: 24px 0 24px 0;
+}
+
+.orderNameProfile {
+    margin-bottom: 8px;
+}
+
+.ingredientsAndPriceWrapper {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.ingredientsContainer {
+    display: flex;
+    flex-grow: 1;
+}
+
+.ingredientWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: -10px;
+    position: relative;
+}
+
+.remainingCount {
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.ingredientWrapper img {
+    width: 64px;
+    height: 64px;
+    border: 1px solid #801AB2;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: black;
+}
+
+
+.priceIngredient {
+    display: flex;
+    gap: 12px;
+}
+
+.orderStatus {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.orderStatusComplete {
+    color: #00CCCC;
+}
+
+.orderStatusCanceled {
+    color: #E52B1A;
+}

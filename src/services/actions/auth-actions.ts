@@ -1,9 +1,40 @@
-import { authRequest, authSuccess, authFailure, logoutSuccess, tokenRefreshed, userUpdated, passwordResetRequestSuccess, passwordResetRequestFailure, passwordResetSuccess, passwordResetFailure } from '../reducers/auth-reducer';
+import { AppDispatch } from '../types';
 import { BASE_URL } from '../../data/constants';
 import Cookies from 'js-cookie';
 import checkResponse from '../../data/api';
+import {
+    authRequest,
+    authSuccess,
+    authFailure,
+    registerSuccess,
+    logoutSuccess,
+    tokenRefreshed,
+    userUpdated,
+    passwordResetRequestSuccess,
+    passwordResetRequestFailure,
+    passwordResetSuccess,
+    passwordResetFailure
+} from '../reducers/auth-reducer-slice';
 
-export const registerUser = (email, password, name) => async (dispatch) => {
+interface RegisterUserData {
+    user: {
+        email: string;
+        name: string;
+    };
+    success: boolean;
+}
+
+interface LoginUserData {
+    user: {
+        email: string;
+        name: string;
+    };
+    accessToken: string;
+    refreshToken: string;
+    success: boolean;
+}
+
+export const registerUser = (email: string, password: string, name: string) => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     try {
         const response = await fetch(`${BASE_URL}/auth/register`, {
@@ -13,20 +44,20 @@ export const registerUser = (email, password, name) => async (dispatch) => {
             },
             body: JSON.stringify({ email, password, name })
         });
-        const data = await checkResponse(response);
+        const data: RegisterUserData = await checkResponse(response);
         if (data.success) {
             dispatch(registerSuccess({
                 user: data.user,
             }));
         } else {
-            dispatch(authFailure(data.success));
+            dispatch(authFailure('Registration failed'));
         }
     } catch (error) {
         dispatch(authFailure('Registration failed'));
     }
 };
 
-export const loginUser = (email, password) => async (dispatch) => {
+export const loginUser = (email: string, password: string) => async (dispatch: AppDispatch): Promise<{ success: boolean }> => {
     dispatch(authRequest());
     try {
         const response = await fetch(`${BASE_URL}/auth/login`, {
@@ -36,7 +67,7 @@ export const loginUser = (email, password) => async (dispatch) => {
             },
             body: JSON.stringify({ email, password })
         });
-        const data = await checkResponse(response);
+        const data: LoginUserData = await checkResponse(response);
         if (data.success) {
             dispatch(authSuccess({
                 user: data.user,
@@ -45,16 +76,16 @@ export const loginUser = (email, password) => async (dispatch) => {
             }));
             return { success: true };
         } else {
-            dispatch(authFailure('Неправильный логин или пароль'));
+            dispatch(authFailure('Invalid login or password'));
             return { success: false };
         }
     } catch (error) {
-        dispatch(authFailure('Ошибка авторизации'));
+        dispatch(authFailure('Authorization error'));
         return { success: false };
     }
 };
 
-export const logoutUser = async (dispatch) => {
+export const logoutUser = () => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const refreshToken = Cookies.get('refreshToken');
 
@@ -70,14 +101,14 @@ export const logoutUser = async (dispatch) => {
         if (data.success) {
             dispatch(logoutSuccess());
         } else {
-            dispatch(authFailure(data.success));
+            dispatch(authFailure('Logout failed'));
         }
     } catch (error) {
         dispatch(authFailure('Logout failed'));
     }
 };
 
-export const requestPasswordReset = (email) => async (dispatch) => {
+export const requestPasswordReset = (email: string) => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
 
     try {
@@ -92,14 +123,14 @@ export const requestPasswordReset = (email) => async (dispatch) => {
         if (data.success) {
             dispatch(passwordResetRequestSuccess());
         } else {
-            dispatch(passwordResetRequestFailure(data.success));
+            dispatch(passwordResetRequestFailure('Failed to send password reset request'));
         }
     } catch (error) {
         dispatch(passwordResetRequestFailure('Failed to request password reset'));
     }
 };
 
-export const resetPassword = (password, token) => async (dispatch) => {
+export const resetPassword = (password: string, token: string) => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
 
     try {
@@ -114,14 +145,14 @@ export const resetPassword = (password, token) => async (dispatch) => {
         if (data.success) {
             dispatch(passwordResetSuccess());
         } else {
-            dispatch(passwordResetFailure(data.message));
+            dispatch(passwordResetFailure('Failed to reset password'));
         }
     } catch (error) {
         dispatch(passwordResetFailure('Failed to reset password'));
     }
 };
 
-export const refreshToken = () => async (dispatch) => {
+export const refreshToken = () => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const refreshToken = Cookies.get('refreshToken');
 
@@ -142,14 +173,14 @@ export const refreshToken = () => async (dispatch) => {
         if (data.success) {
             dispatch(tokenRefreshed(data.accessToken));
         } else {
-            dispatch(authFailure(data.message));
+            dispatch(authFailure('Failed to refresh token'));
         }
     } catch (error) {
         dispatch(authFailure('Token refresh failed'));
     }
 };
 
-export const fetchUserData = () => async (dispatch) => {
+export const fetchUserData = () => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const accessToken = localStorage.getItem('accessToken');
 
@@ -176,7 +207,7 @@ export const fetchUserData = () => async (dispatch) => {
     }
 };
 
-export const updateUserData = (email, name) => async (dispatch) => {
+export const updateUserData = (email: string, name: string) => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const accessToken = localStorage.getItem('accessToken');
 
@@ -185,7 +216,7 @@ export const updateUserData = (email, name) => async (dispatch) => {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${accessToken}`
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({ email, name })
         });

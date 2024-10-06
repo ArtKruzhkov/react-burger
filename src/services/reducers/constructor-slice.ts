@@ -1,17 +1,35 @@
-import { ADD_INGREDIENT_TO_CONSTRUCTOR, REMOVE_INGREDIENT_FROM_CONSTRUCTOR, UPDATE_INGREDIENT_ORDER, CLEAR_CONSTRUCTOR } from "../actions/constructor-actions";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
-const initialState = {
+interface Ingredient {
+    _id: string;
+    name: string;
+    type: string;
+    price: number;
+    image: string;
+    [key: string]: any;
+    uniqueId: string;
+}
+
+interface ConstructorState {
+    ingredients: Ingredient[];
+    ingredientCounts: Record<string, number>;
+}
+
+const initialState: ConstructorState = {
     ingredients: [],
     ingredientCounts: {}
 };
 
-const constructorReducer = (state = initialState, action) => {
-    switch (action.type) {
-        case ADD_INGREDIENT_TO_CONSTRUCTOR: {
-            const ingredient = action.payload;
+const constructorSlice = createSlice({
+    name: 'constructorRed',
+    initialState,
+    reducers: {
+        addIngredientToConstructor: (state, action: PayloadAction<Ingredient>) => {
+            const ingredient = { ...action.payload, uniqueId: uuidv4() };
             const ingredientId = ingredient._id;
 
-            if (ingredient.type === undefined || ingredient.type === null) {
+            if (!ingredient.type) {
                 return state;
             }
 
@@ -46,8 +64,8 @@ const constructorReducer = (state = initialState, action) => {
                     ingredientCounts: updatedIngredientCounts
                 };
             }
-        }
-        case REMOVE_INGREDIENT_FROM_CONSTRUCTOR: {
+        },
+        removeIngredientFromConstructor: (state, action: PayloadAction<string>) => {
             const uniqueId = action.payload;
             const ingredientIndex = state.ingredients.findIndex(ingredient => ingredient.uniqueId === uniqueId);
 
@@ -86,19 +104,28 @@ const constructorReducer = (state = initialState, action) => {
                 ingredients: updatedIngredients,
                 ingredientCounts: updatedIngredientCounts
             };
-        }
-        case UPDATE_INGREDIENT_ORDER: {
+        },
+        updateIngredientOrder: (state, action: PayloadAction<Ingredient[]>) => {
             return {
                 ...state,
                 ingredients: action.payload
             };
-        }
-        case CLEAR_CONSTRUCTOR: {
-            return initialState;
-        }
-        default:
-            return state;
+        },
+        clearConstructor: () => initialState,
     }
-};
+});
 
-export default constructorReducer;
+export const {
+    addIngredientToConstructor,
+    removeIngredientFromConstructor,
+    updateIngredientOrder,
+    clearConstructor
+} = constructorSlice.actions;
+
+export type IConstructorActions =
+    | ReturnType<typeof addIngredientToConstructor>
+    | ReturnType<typeof removeIngredientFromConstructor>
+    | ReturnType<typeof updateIngredientOrder>
+    | ReturnType<typeof clearConstructor>;
+
+export default constructorSlice.reducer;

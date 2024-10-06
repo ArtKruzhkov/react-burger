@@ -19,7 +19,7 @@ function AppHeader() {
                     Конструктор
                 </NavLink>
                 <NavLink
-                    to="/orders"
+                    to="/feed"
                     className={({ isActive }) =>
                         isActive
                             ? `${styles.linkContainer} ${styles.linkContainerActive} text text_type_main-default`
