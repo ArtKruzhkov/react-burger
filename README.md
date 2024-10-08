@@ -6,6 +6,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm run deploy`
+
+A command to deploy the project to GitHub Pages. Before deploying, the predeploy command is run, which builds the project:
+- predeploy: runs the npm run build command to create a production build of the app.
+- deploy: uploads the contents of the build folder to GitHub Pages using the gh-pages package.
+
+To deploy the project, run the command npm run deploy, and the project will be published to GitHub Pages.
+
 ### `npm start`
 
 Runs the app in the development mode.\
