@@ -2,6 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+This project is available at: https://artkruzhkov.github.io/react-burger/
+Click on 'Конструктор' to see main page.
+
 ## Available Scripts
 
 In the project directory, you can run:
