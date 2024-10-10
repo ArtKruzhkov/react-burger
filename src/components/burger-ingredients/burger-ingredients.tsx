@@ -31,6 +31,7 @@ const DraggableIngredient = ({ ingredient, onIngredientClick, count }: IDraggabl
             ref={drag}
             className={`${styles.item} ${styles.draggableItem}`}
             onClick={() => onIngredientClick(ingredient)}
+            data-testid={`ingredient-${ingredient.type}`}
         >
             <img src={ingredient.image} alt={ingredient.name} />
             <p className={`${styles.itemPrice} text text_type_digits-default`}>
@@ -127,6 +128,7 @@ function BurgerIngredients() {
                                 ingredient={ingredient}
                                 onIngredientClick={handleIngredientClick}
                                 count={clickedIngredients[ingredient._id] || 0}
+                                data-testid={`ingredient-${ingredient.type}`}
                             />
                         ))}
                     </div>
@@ -140,6 +142,7 @@ function BurgerIngredients() {
                                 ingredient={ingredient}
                                 onIngredientClick={handleIngredientClick}
                                 count={clickedIngredients[ingredient._id] || 0}
+                                data-testid={`ingredient-${ingredient.type}`}
                             />
                         ))}
                     </div>
@@ -153,6 +156,7 @@ function BurgerIngredients() {
                                 ingredient={ingredient}
                                 onIngredientClick={handleIngredientClick}
                                 count={clickedIngredients[ingredient._id] || 0}
+                                data-testid={`ingredient-${ingredient.type}`}
                             />
                         ))}
                     </div>

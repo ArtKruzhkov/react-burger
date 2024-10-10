@@ -1,19 +1,21 @@
 import { Logo } from "@ya.praktikum/react-developer-burger-ui-components";
 import { BurgerIcon, ListIcon, ProfileIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import styles from './app-header.module.css';
 
 function AppHeader() {
+    const location = useLocation();
     return (
         <header className={`${styles.mainHeader} text text_type_main-default`}>
             <nav className={`${styles.navbarHeader}`}>
                 <NavLink
                     to="/"
-                    className={({ isActive }) =>
-                        isActive
+                    className={({ isActive }) => {
+                        const isActiveLink = isActive || location.pathname === '/react-burger';
+                        return isActiveLink
                             ? `${styles.linkContainer} ${styles.linkContainerActive} text text_type_main-default`
-                            : `${styles.linkContainer} text text_type_main-default text_color_inactive`
-                    }
+                            : `${styles.linkContainer} text text_type_main-default text_color_inactive`;
+                    }}
                 >
                     <BurgerIcon type="primary" />
                     Конструктор
