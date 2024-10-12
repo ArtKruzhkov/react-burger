@@ -61,6 +61,7 @@ const DraggableIngredient = ({ ingredient, index, moveIngredient, handleRemove, 
                 price={ingredient.price}
                 thumbnail={ingredient.image}
                 handleClose={() => handleRemove(ingredient.uniqueId)}
+                data-testid={`ingredient-${ingredient.type}`} // Изменено здесь
             />
         </div>
     );
@@ -126,7 +127,6 @@ const BurgerConstructor = () => {
         setIsModalOpen(true);
     };
 
-
     const closeModal = () => {
         setIsModalOpen(false);
     };
@@ -161,6 +161,7 @@ const BurgerConstructor = () => {
                                 text={`${bun.name} (верх)`}
                                 price={bun.price}
                                 thumbnail={bun.image}
+                                data-testid={`ingredient-${bun.type}`}
                             />
                         </div>
                     )}
@@ -173,6 +174,7 @@ const BurgerConstructor = () => {
                             moveIngredient={moveIngredient}
                             handleRemove={handleRemove}
                             otherIngredients={otherIngredients}
+                            data-testid={`ingredient-${ingredient.type}`}
                         />
                     ))}
 
@@ -184,6 +186,7 @@ const BurgerConstructor = () => {
                                 text={`${bun.name} (низ)`}
                                 price={bun.price}
                                 thumbnail={bun.image}
+                                data-testid={`ingredient-${bun.type}`}
                             />
                         </div>
                     )}

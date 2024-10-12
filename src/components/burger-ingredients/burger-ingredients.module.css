@@ -1,6 +1,7 @@
 .containerScroll {
     max-height: 612px;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-color: #8585AD #2F2F37;
 }
 

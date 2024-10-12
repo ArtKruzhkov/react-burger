@@ -39,6 +39,7 @@ function App() {
             <AppHeader />
             <Routes location={backgroundLocation}>
                 <Route path="/" element={<MainPage />} />
+                <Route path="/react-burger" element={<MainPage />} />
                 <Route path="/ingredients/:id" element={<IngredientInfoFullPage />} />
                 <Route path="/feed/*" element={<FeedPage />} />
                 <Route path="/feed/:number" element={<OrderInfoFullPage />} />

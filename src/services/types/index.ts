@@ -3,7 +3,6 @@ import { ThunkDispatch } from 'redux-thunk';
 import store from '../store';
 import { IAuthActions } from '../reducers/auth-reducer-slice';
 import { IConstructorActions } from '../reducers/constructor-slice';
-import { ICurrentIngredientActions } from '../reducers/current-ingredient-slice';
 import { IIngredientsActions } from '../reducers/ingredients-slice';
 import { IOrderActions } from '../reducers/order-reducer-slice';
 import { IOrdersActions } from '../reducers/orders-reducer';
@@ -12,7 +11,6 @@ import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 export type TApplicationActions = IAuthActions |
     IConstructorActions |
-    ICurrentIngredientActions |
     IIngredientsActions |
     IOrderActions |
     IOrdersActions;
