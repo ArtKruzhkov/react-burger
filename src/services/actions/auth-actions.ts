@@ -183,6 +183,7 @@ export const refreshToken = () => async (dispatch: AppDispatch) => {
 export const fetchUserData = () => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const accessToken = localStorage.getItem('accessToken');
+    // console.log(accessToken);
 
     try {
         const response = await fetch(`${BASE_URL}/auth/user`, {
@@ -210,13 +211,14 @@ export const fetchUserData = () => async (dispatch: AppDispatch) => {
 export const updateUserData = (email: string, name: string) => async (dispatch: AppDispatch) => {
     dispatch(authRequest());
     const accessToken = localStorage.getItem('accessToken');
+    // console.log(accessToken);
 
     try {
         const response = await fetch(`${BASE_URL}/auth/user`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `${accessToken}`
             },
             body: JSON.stringify({ email, name })
         });
