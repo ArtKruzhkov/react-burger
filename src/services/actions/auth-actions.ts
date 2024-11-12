@@ -216,7 +216,7 @@ export const updateUserData = (email: string, name: string) => async (dispatch: 
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `${accessToken}`
             },
             body: JSON.stringify({ email, name })
         });
