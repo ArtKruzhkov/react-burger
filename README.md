@@ -4,6 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 This project is available at: https://artkruzhkov.github.io/react-burger/
 
+> **Note:**  
+> The original educational API is no longer available, as the domain has been decommissioned.  
+> The project relied on this API for core functionality, therefore the application is currently not operational.
+
+
 ## Available Scripts
 
 In the project directory, you can run:
